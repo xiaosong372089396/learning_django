@@ -1,0 +1,146 @@
+{% extends 'master/base.html' %}
+
+{% block title %}
+{{department}}内部资产列表
+{% endblock %}
+
+{% block master %}<a href="/assets/emp_department/">部门</a>{% endblock %}
+{% block list %} 员工列表 {% endblock%}
+
+{% block content %}
+                <table class="table">
+                    <tr>
+                    {%if department%}
+                        <td style="padding-left:2%;"><a onclick="jQuery('#modal_add_emp').modal('show', {backdrop: 'static'});" class="btn btn-primary">新建</a></td>
+                    {%else%}
+                        <form action="/assets/emp_list/">
+                            
+                                <td class="col-sm-1">姓名： </td>
+                                <td class="col-sm-2" style="margin-left:1px;">
+                                    <input type="text"  class="form-control" name="query" id="query" value="{{query}}"/>
+                                </td> 
+                            <td style="padding-left:2%;"><a class="btn btn-primary" type="submit">搜索</a></td>
+                        </form>
+                    {%endif%}
+                     </tr>
+                </table>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-bordered table-striped" id="server">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th style="padding-left:12%">在职</th>
+                                <th style="padding-left:12%">部门</th>
+                                <th style="padding-left:12%">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for emp in page%}
+                                <tr>
+                                    <td>{{emp.name}}</td>
+                                    <td  style="padding-left:12%">{{emp.status}}</td>
+                                    <td style="padding-left:12%">{{emp.department}}</td>
+                                    <td style="padding-left:12%"><a class="btn btn-success" href="/assets/emp_detail/?employee={{emp.id}}">查看</a>
+                                        <a class="btn btn-success" onclick="departure('{{emp.id}}')">离职</a>
+                                    </td>
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+            <ul class="pager" style="float: right">
+
+                {% if page.has_previous %}
+                    <li><a href="/assets/emp_list/">首页</a></li>
+                    <li><a href="/assets/emp_list/?query_types={{query_types}}&page={{ page.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+
+                {% if page.has_next %}
+                    <li><a href="/assets/emp_list/?query_types={{query_types}}&page={{ page.next_page_number }}">后一页</a></li>
+                    <li><a href="/assets/emp_list/?query_types={{query_types}}&page={{ page.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum"></li>
+                    <li onclick="window.location.href='/assets/emp_list/?query_types={{query_types}}&page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                    <li><a href="#">第{{page.number}}/{{page.paginator.num_pages}}页   共{{ page.paginator.num_pages}}页</a></li>
+            </ul>
+
+<script>
+
+function departure(empid){
+    var url = "/assets/emp_departrue/";
+    var info = confirm("确定此员工离职？");
+    if (info) {
+        $.getJSON(url, {'empid': empid}, function(result){
+            alert(result);
+            location.reload();
+        });
+    };
+
+};
+
+function add_department(){
+    url = '/assets/create_emp/';
+    var dep_name = $('#name').val();
+    var department = $('#department').val();
+    $.get(url, {'name': dep_name, 'department': department}, function(result){
+        alert(result);
+        location.reload();
+    });
+
+};
+
+</script>
+{%endblock%}
+
+{%block modals%}
+    <div class="modal fade" id="modal_add_emp">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">新建</h4>
+                </div>
+                <input type="hidden" name="department" id="department" value="{{department}}">
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">名称</label>
+
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button onclick="add_department()" class="btn btn-info">创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}
+{% block dir %}'dir_assets'{% endblock%}

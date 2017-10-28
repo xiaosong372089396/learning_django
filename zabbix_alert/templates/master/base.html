@@ -1,0 +1,247 @@
+{% load accounttags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="闲徕-监控告警平台" />
+	<meta name="author" content="" />
+	<title>闲徕-监控告警平台</title>
+	<link rel="stylesheet" href="/static/master/fonts/fontawesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/static/plugins/bootcss/css/bootstrap.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-core.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-forms.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-components.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-skins.css">
+	<link rel="stylesheet" href="/static/master/css/custom.css">
+        {% block extra_css %}
+        {% endblock %}
+	<script src="/static/master/js/jquery.min.js"></script>
+	<script src="/static/master/js/jquery.hDialog.min.js"></script>
+        {% block extra_js %}
+        {% endblock %}
+</head>
+
+<body class="page-body">
+<!--个人登录用户资料-->
+	<div class="settings-pane">
+
+		<a href="#" data-toggle="settings-pane" data-animate="true">
+			&times;
+		</a>
+
+		<div class="settings-pane-inner">
+
+			<div class="row">
+
+				<div class="col-md-4">
+
+					<div class="user-info">
+                        <div class="user-image">
+							<a href="">
+								<img src="{{ user.profile.head_img |cut_url }}" class="img-responsive img-circle" />
+							</a>
+						</div>
+
+						<div class="user-details">
+
+							<h3>
+								<a href="">{{ user.profile.name }}</a>
+								<span class="user-status is-online"></span>
+							</h3>
+							<p class="user-title">{{ user.profile.department }}</p>
+							<div class="user-links">
+								<a href="/accounts/set_profile/" class="btn btn-primary">修改资料</a>
+								<a href="/accounts/logout" class="btn btn-success">退出</a>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+<!--个人登录用户资料end-->
+	<div class="copyrights">Collect from <a href="http://www.ixianlai.com/"  title="闲徕监控报警平台">闲徕监控告警平台</a></div>
+	<div class="page-container">
+<!--左侧菜单开始-->
+		<div class="sidebar-menu toggle-others fixed">
+
+			<div class="sidebar-menu-inner">
+				<header class="logo-env">
+					<!-- logo -->
+					<div class="logo">
+						<a href="/" class="logo-expanded">
+							<img src="/static/master/img/logo@2x.png" width="" alt="" />
+						</a>
+						<a href="#" class="logo-collapsed">
+							<img src="/static/master/img/logo-collapsed@2x.png" width="40" alt="" />
+						</a>
+					</div>
+					<div class="mobile-menu-toggle visible-xs">
+						<a href="#" data-toggle="user-info-menu">
+							<i class="fa-bell-o"></i>
+							<span class="badge badge-success">7</span>
+						</a>
+
+						<a href="#" data-toggle="mobile-menu">
+							<i class="fa-bars"></i>
+						</a>
+					</div>
+					<div class="settings-icon">
+						<a href="#" data-toggle="settings-pane" data-animate="true">
+							<i class="fa-cog"></i>
+						</a>
+					</div>
+				</header>
+				<ul id="main-menu" class="main-menu">
+					<li class="active opened active">
+					{#  	<a href="{% url 'index' %}"> #}
+					<!--		<i class="fa-dashboard"></i>
+							<span class="title">仪表盘</span>
+						</a> -->
+					</li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-bell"></i>
+                            <span class="title">告警平台</span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a href="/alertsapi/history_alert/">
+                                    <span class="title">历史短信</span>
+                                </a>
+                                <a href="/alertsapi/today_alert/">
+                                    <span class="title">当天告警</span>
+                                </a>
+                                <a href="/alertsapi/contact_alert/">
+                                    <span class="title">告警用户</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </ul>
+			</div>
+		</div>
+		<div class="main-content">
+			<!-- User Info, Notifications and Menu Bar -->
+			<nav class="navbar user-info-navbar" role="navigation">
+				<ul class="user-info-menu left-links list-inline list-unstyled">
+					<li class="hidden-sm hidden-xs">
+						<a href="#" data-toggle="sidebar">
+							<i class="fa-bars"></i>
+						</a>
+					</li>
+				</ul>
+				<ul class="user-info-menu right-links list-inline list-unstyled">
+
+					<li class="search-form">
+
+						<form method="get" action="">
+							<input type="text" name="s" class="form-control search-field" placeholder="搜索..." />
+
+							<button type="submit" class="btn btn-link">
+								<i class="linecons-search"></i>
+							</button>
+						</form>
+
+					</li>
+
+					<li class="dropdown user-profile">
+						<a href="#" data-toggle="dropdown">
+                            <img src="{{ user.profile.head_img | cut_url }}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+
+							<span>
+								{{user.profile.name}}
+								<i class="fa-angle-down"></i>
+							</span>
+						</a>
+
+						<ul class="dropdown-menu user-profile-menu list-unstyled">
+							<li>
+								<a href="/accounts/set_profile/">
+									<i class="fa-wrench"></i>
+									设置
+								</a>
+							</li>
+							<li class="last">
+								<a href="/accounts/logout">
+									<i class="fa-lock"></i>
+									退出
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</nav>
+        {% block header %}
+                    <div class="page-title">
+                        <div class="title-env">
+                            <h1 class="title">{% block title %}undefine{% endblock %}</h1>
+                        </div>
+                        <div class="breadcrumb-env">
+                            {% block  path %}
+                                <ol class="breadcrumb bc-1">
+                                <li>
+                                    <a href="/"><i class="fa-home"></i>Home</a>
+                                </li>
+                                <li>
+                                    {% block master %}{% endblock %}
+                                </li>
+                                <li class="active">
+                                <strong>{% block list %}{% endblock %}</strong>
+                                </li>
+                                </ol>
+                                {% endblock %}
+                        </div>
+                    </div>
+                {% endblock %}
+            <div class="row">
+            {% block content %}
+			{% endblock %}
+            </div>
+			<footer class="main-footer sticky footer-type-1">
+
+				<div class="footer-inner">
+                    <div class="footer-text">
+						&copy; 2017
+						<strong>闲徕</strong>
+						
+监控告警平台---<a href="" title="闲徕运维团队" target="_blank">闲徕运维团队</a>
+					</div>
+                    <div class="go-up">
+
+						<a href="#" rel="go-top">
+							<i class="fa-angle-up"></i>
+						</a>
+
+					</div>
+
+				</div>
+
+			</footer>
+		</div>
+	</div>
+    {% block modals %}
+    {% endblock %}
+ <script type="text/javascript">
+/*     window.onload=function(){
+        var div = document.getElementById({% block dir %} {%endblock%}); 
+        div.setAttribute("class", "opened active");
+    } */
+</script>
+    <script src="/static/plugins/echarts/echarts.js"></script>
+    <script src="/static/master/js/datepicker/bootstrap-datepicker.js"></script>
+	<script src="/static/plugins/bootcss/js/bootstrap.min.js"></script>
+	<script src="/static/master/js/TweenMax.min.js"></script>
+	<script src="/static/master/js/resizeable.js"></script>
+	<script src="/static/master/js/joinable.js"></script>
+	<script src="/static/master/js/xenon-api.js"></script>
+	<script src="/static/master/js/xenon-toggles.js"></script>
+	<script src="/static/master/js/xenon-custom.js"></script>
+</body>
+</html>

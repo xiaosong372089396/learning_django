@@ -1,0 +1,133 @@
+ {% extends 'master/base.html' %}
+{% block title %}修改用户信息{% endblock %}
+{% block master %}<a href="/accounts/department_list/">部门列表</a>{% endblock %}
+{% block list %}修改用户信息{% endblock %}
+{% block content %}
+<div class="panel panel-default">
+    <div class="panel-body" style="margin:3%;">
+        <form id="update_profile_form" enctype="multipart/form-data" method="post">
+        <input type="hidden" name="query_department" id="query_department" value="{{query_department}}">
+        <input type="hidden" name="profile_id" id="profile_id" value="{{profile.id}}">
+        {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">姓名:</label>
+                                <input type="text" class="form-control" name="name" id="name" value="{{profile.name}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-12" class="control-label">角色</label>
+                                <select class="form-control" name="role" id="role">
+                                    <option value="{{profile.role.id}}">{{profile.role}}</option>
+                                    {%for one in roles%}
+                                        <option value="{{one.id}}">{{one.name}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-5" class="control-label">权限</label>
+                                <select class="form-control" name="privilege" id="privilege">
+                                    <option value="{{profile.privilege}}">{{profile.get_privilege_display}}</option>
+                                    <option value="1">普通</option>
+                                    <option value="2">中级</option>
+                                    <option value="3">高级</option>
+                                    <option value="4">超级</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="field-6" class="control-label">部门</label>
+                                <select class="form-control" name="department" id="department">
+                                    <option value="{{profile.department.id}}">{{profile.department.name}}</option>
+                                    {%for one in departments%}
+                                        <option value="{{one.id}}">{{one.name}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">手机号</label>
+                                <input type="text" class="form-control" name="cell" id="cell" value="{{profile.cell}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="field-3" class="control-label">邮箱</label>
+                                <input type="text" class="form-control" id="mail" name="mail" value="{{profile.mail}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">是否发送警报</label>
+                                <input type="checkbox" class="iswitch iswitch-orange" {{send_alarm}} name="send_alarm" id="send_alarm">
+                            </div>
+                        </div>
+                    </div>
+
+            <a onclick="update_profile()" class="btn btn-info" style="margin-left:40%;margin-top:3%;">提交</a>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+function checkform(){
+    var name = $('#name');
+    if (name.val() == '') {
+        alert('请填写名字');
+        return false;
+    };
+    return true;
+}
+
+function update_profile(){
+    var url = '/accounts/update_profile/';
+    var data = $('#update_profile_form').serialize();
+    var department = $('#query_department').val();
+    if (department) {
+        var change_url = "/accounts/profile_list/?query_key=" + department;
+    }else{
+        var change_url = "/accounts/profile_list/";
+    };
+    if (checkform()) {
+        $.post(url, data, function(result){
+            var result_status = result.indexOf('失败');
+            if (result_status != '-1') {
+                alert(result);
+            } else {
+                alert(result);
+                window.location=change_url;
+            };
+        });
+    };
+}
+
+</script>
+
+{%endblock%}
+
+
+{% block dir %}'dir_profile'{% endblock%}

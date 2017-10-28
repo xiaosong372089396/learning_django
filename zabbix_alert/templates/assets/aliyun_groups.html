@@ -1,0 +1,105 @@
+{% extends 'master/base.html' %}
+{% block title %}服务器分组{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}                                  
+{% block content %}
+    {% if user.profile.privilege > 1 %}
+    <div class="row">
+        <a onclick="jQuery('#modal_aliyun_groups').modal('show',{backdrop: 'static'});" class="btn btn-turquoise" style="margin-left:2%;">添加分组</a>
+    </div>
+    {%endif%}
+    <input type="hidden" name="server_type" id="server_type" value="{{server_url}}">
+        {% for line in groups%}
+            <div class="row">
+            {%for one in line%}
+
+                <div class="col-sm-3">
+                    
+                    <div class="xe-widget xe-progress-counter xe-progress-counter-turquoise" data-count=".num" data-from="0" data-to="520" data-suffix="k" data-duration="3">
+                        
+                        <div class="xe-background">
+                            <i class="linecons-paper-plane"></i>
+                        </div>
+                        <a href="/assets/server_list/?query_key=分组&query_value={{one.name}}">
+                        <div class="xe-upper">
+                            <div class="xe-icon">
+                                <i class="fa-life-ring"></i>
+                            </div>
+                            <div class="xe-label">
+                                <strong class="num">{{one.name}}</strong>
+                            </div>
+                        </div>
+                        </a>
+                        <div class="xe-progress">
+                            <span class="xe-progress-fill" data-fill-from="0" data-fill-to="82" data-fill-unit="%" data-fill-property="width" data-fill-duration="3" data-fill-easing="true"></span>
+                        </div>
+                        
+                        <div class="xe-lower">
+                            <span>{{one.count}}服务器数量(包含已过期的)</span>
+                            <strong>{{one.date_count}}即将过期</strong>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+
+                {%endfor%}
+            </div>
+        {%endfor%}
+
+<script>
+
+function create_aliyun_group(){
+    var name = $('#name').val();
+    if (name=='') {
+        alert('组名不可为空');
+    }else{
+        var url = '/assets/add_group/'
+        $.get(url, {'name': name, 'server_type': 'aliyun'}, function(result){
+            alert(result);
+            location.reload();
+        });
+    };
+}
+
+</script>
+{%endblock%}
+
+{%block modals%}
+    <div class="modal fade" id="modal_aliyun_groups">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">新建</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">名称</label>
+
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button onclick="create_aliyun_group()" class="btn btn-info">创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}
+
+{% block dir %}
+'dir_assets'
+{% endblock%}

@@ -1,0 +1,59 @@
+{% extends  'cdn/index.html' %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block title %}<title>删除海外缓存</title>{% endblock %}
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/xenon-core.css">
+    <link rel="stylesheet" href="/static/css/xenon-forms.css">
+    <link rel="stylesheet" href="/static/css/xenon-components.css">
+    <link rel="stylesheet" href="/static/css/xenon-skins.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <script src="/static/bootstrap/js/bootstrap.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    {% block header  %}<a href="#" class="active J_menuTab" data-id="#">删除海外缓存</a>{% endblock %}
+
+</head>
+<body>
+{% block wanfa %}
+    <div class="desc" style="margin-left: 160px; margin-top: 30px;">
+        <p>删除海外缓存,点击提交即可！</p>
+    <table class="code-list">
+        <tbody>
+            <tr>
+                <td>
+                        <p>
+                            <button type="button" class="btn btn-primary" id="refresh" style="!important; background: #337ab7; !important;width: 105px;">提交删除缓存</button>
+                        </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+jQuery(document).ready(function () {
+    jQuery('#refresh').on('click', function () {
+            jQuery.post('/overseas/dete_cache/', {
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function (data) {
+                console.log(data);
+                if (data['result']) {
+                    swal({
+                        title: data['result'],
+                        text:  "",
+                        type:  "success"
+                     }, function () {
+                        window.location.reload();
+                    });
+                }
+        },'json');
+    });
+});
+</script>
+{% endblock %}
+</body>
+</html>

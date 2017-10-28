@@ -1,0 +1,148 @@
+{% extends 'master/base.html' %}
+{% block title %}服务器列表{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}
+{% block list %} 腾讯云列表 {% endblock%}
+{% block content %}
+    <div>
+        <table class='table' style="width:30%;">
+            <form action="/assets/qcloud_list/" method="GET">
+            <td>
+                <select id='query_key' name='query_key' style="margin-left:5%;height:30px;">
+                    {% for one in query_item%}
+                    <option value = '{{one}}'>{{one}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="text" name="query_value" value="{{query_value}}" placeholder="可模糊查询" style="margin-left:5%;height:30px;">
+            </td>
+            <td>
+                <button type="submit" class='btn btn-success' style="margin-left:5%;">搜索</button>
+            </td>
+            </form>
+            {% if user.profile.privilege != 1 %}
+            <td>
+                <a href="/assets/create_qcloud/" class='btn btn-turquoise' style="margin-left:5%;">创建实例</a>
+            </td>
+            <td>
+                <a class='btn btn-turquoise' href="/assets/create_project/?type=qcloud" style="margin-left:5%;">创建项目组</a>
+            </td>
+            {%endif%}
+        </table>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                    <table class="table table-bordered table-hover table-striped " id="server">
+
+                    {% if phont_status%}
+                        <thead>
+                            <tr>
+                                <th>实例ID/名称</th>
+                                <th>IP地址</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a href="assets/server_detail/?instanceid={{server.instanceid}}">{{server.instance_name}}<br>{{server.instanceid}}</a></td>
+                                <td>{{server.public_ip}}</td>
+                            </tr>
+                        </tbody>
+                    {%else%}
+                            <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>所在可用区</th>
+                                    <th>IP地址</th>
+                                    <th>状态</th>
+                                    <th>配置</th>
+                                    <th>付费方式</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for server in page %}
+                                    <tr>
+                                        <td><a href="assets/server_detail/?instanceid={{server.instanceid}}">{{server.instance_name}}</a></td>
+                                        <td>{{server.zone_id}}</td>
+                                        <td>公网{{server.public_ip}}<br>内网{{server.inner_ip}}</td>
+                                        <td>{{server.status}}</td>
+                                        <td>{{server.cpu}}核{{server.memory}}GB {{server.eip_bandwidth}}Mbps</td>
+                                        <td><font color="{{server.status_color}}">{{server.expired_time}}到期</font></td>
+                                        <td>
+                                            <li class="dropdown user-profile">
+                                            <a href="#" data-toggle="dropdown">
+                                                <span>操作
+                                                    <i class="fa-angle-down"></i>
+                                                </span>
+                                            </a>
+                                            <ul class="dropdown-menu user-profile-menu list-unstyled">
+                                                {% if user.profile.privilege != 1 %}
+                                                    <li>
+                                                        <a href="assets/server_change_name/?instanceid={{server.instanceid}}">
+                                                            修改实例名
+                                                        </a>
+                                                    </li>
+                                                    
+                                                    <li>
+                                                        <a onclick="server_start('{{server.instanceid}}')">
+                                                            启动
+                                                        </a>
+                                                    </li>
+                                                    {%if user.profile.privilege > 1%}
+                                                    <li>
+                                                        <a onclick="server_stop('{{server.instanceid}}')">
+                                                            停止
+                                                        </a>
+                                                    </li>
+                                                    <li class="last">
+                                                        <a onclick="server_reboot('{{server.instanceid}}')">
+                                                            重启
+                                                        </a>
+                                                    </li>
+                                                    {%endif%}
+                                                {%endif%}
+                                            </ul>
+                                        </li>
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        {%endif%}
+                    </table>
+            </div>
+        </div>
+    </div>
+</div>
+            <ul class="pager" style="float: right">
+
+                {% if page.has_previous %}
+                    <li><a href="/assets/qcloud_list/">首页</a></li>
+                    <li><a href="/assets/qcloud_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+
+                {% if page.has_next %}
+                    <li><a href="/assets/qcloud_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.next_page_number }}">后一页</a></li>
+                    <li><a href="/assets/qcloud_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum"></li>
+                    <li onclick="window.location.href='/assets/qcloud_list/?query_key={{query_key}}&query_value={{query_value}}&page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                    <li><a href="#">第{{page.number}}/{{page.paginator.num_pages}}页   共{{ page.paginator.num_pages}}页</a></li>
+            </ul>
+</div>
+
+<script src="/static/assets/js/server_operate.js"></script>
+
+{% endblock %}
+{% block modals%}
+
+{%endblock%}
+
+{% block dir %}'dir_assets'{% endblock%}

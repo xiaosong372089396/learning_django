@@ -1,0 +1,238 @@
+{% extends 'master/base.html' %}
+{% block title %}购买云数据库{% endblock %}
+{% block master %}<a href="/assets/rds_type/">云数据库列表</a>{% endblock %}
+{% block content %}
+            
+            <div class="row">
+            
+                <div class="col-md-12">
+                    
+                    <ul class="nav nav-tabs nav-tabs-justified">
+                        <li class="active">
+                            <a href="#home-3" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-home"></i></span>
+                                <span class="hidden-xs">腾讯云</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#profile-3" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-user"></i></span>
+                                <span class="hidden-xs">阿里云</span>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home-3">
+                            <div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                
+                                                <form role="form" id='qcloud_rds' class="form-horizontal">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" id="server_type" name="server_type" value="qcloud">
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">内存</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" name="mem" id="field-1" placeholder="单位:MB">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">硬盘大小</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" name="volume" id="field-1" placeholder="单位:GB"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">区域</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <select class="form-control" name="zone">
+                                                                {% for one in zone%}
+                                                                <option value="{{one.key}}">{{one.value}}</option>
+                                                                {%endfor%}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">购买时长</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" name="qcloud_months" id="qcloud_months" placeholder="单位: 月">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">购买数量</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" name="qcloud_num" id="qcloud_num">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group-separator" style="padding-left:40%;">
+                                                        <button  type="submit" class="btn btn-blue" >购买</button>
+                                                    </div>
+                                                </form>
+                                                
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="tab-pane" id="profile-3">
+                            <div>
+                                <form role="form" id="aliyun_rds" class="form-horizontal">
+                                    {% csrf_token %}
+                                    <input type="hidden" id="server_type" name="server_type" value="aliyun">                                                    
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">实例规格</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <select class="form-control" name="db_class">
+                                                                {%for one in aliyun_class%}
+                                                                    <option value="{{one.key}}">{{one.value}}</option>
+                                                                {%endfor%}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">付费模式</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <select class="form-control" name="PayType">
+                                                                <option value="Prepaid">包年包月</option>
+                                                                <option value="Postpaid">按量付费</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">网络类型</label>
+                                                        <div class="col-sm-10">
+                                                            <select class="form-control" name='net_type'>
+                                                                <option value="Intranet">私网</option>
+                                                                <option value="Internet">公网</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">区域</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <select class="form-control" name="zone">
+                                                                {% for one in aliyun_zone%}
+                                                                <option value="{{one.key}}">{{one.value}}</option>
+                                                                {%endfor%}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">硬盘大小</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" name="aliyun_storage" id="aliyun_storage" placeholder="单位: G">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">购买时长</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" name="aliyun_months" id="aliyun_months" placeholder="单位: 月">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group-separator"></div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label" for="field-1">购买数量</label>
+                                                        
+                                                        <div class="col-sm-10">
+                                                            <input type="text" class="form-control" name="aliyun_num" id="aliyun_num">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group-separator" style="padding-left:40%;">
+                                                        <a onclick="aliyun_submit()" type="submit" class="btn btn-blue" >购买</a>
+                                                    </div>
+                                                </form>
+                            </div>
+                        </div>                     
+
+                    </div>
+                    
+                    
+                </div>
+            </div>
+
+<script type="text/javascript">
+function checkaliyun(){
+    var aliyun_num = $('#aliyun_num');
+    if (aliyun_num.val() == '') {
+        alert('请填写购买数量');
+        return false;
+    };
+    var aliyun_storage= $('#aliyun_storage').val();
+    if (aliyun_storage == '') {
+        alert('请填写硬盘大小');
+        return false;
+    };
+    return true;
+}
+
+function aliyun_submit() {
+    var data = $('#aliyun_rds').serialize();
+    if (checkaliyun()) {
+        $.post('/assets/create_rds/', data, function(result){
+            alert(result);
+            window.location= '/assets/rds_type/';
+        });
+    };
+}
+
+function checkqcloud(){
+    var volume = $('#volume').val();
+    if (volume == '') {
+        alert('请填写硬盘大小');
+        return false;
+    };
+    var qcloud_num = $('#qcloud_num').val();
+    if (qcloud_num == '') {
+        alert('请填写购买数量');
+        return false;
+    };
+    return true;
+}
+
+
+function qcloud_submit(){
+    var data = $('#qcloud_rds').serialize();
+    if (checkqcloud()) {
+        $.post('/assets/create_rds/', data, function(result){
+            alert(result);
+            window.location = '/assets/rds_type/';
+        });
+    };
+}
+
+</script>
+
+{% endblock %}
+{% block dir %}'dir_assets'{% endblock%}

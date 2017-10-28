@@ -1,0 +1,42 @@
+/*定义全局body*/
+body {
+    background: white;
+    font-family: 'Open Sans', sans-serif;
+    color: #7a7676;
+    line-height: 20px;
+    overflow-x: hidden;
+    font-size: 14px;
+}
+
+input, select, textarea {
+    font-family: 'Open Sans', sans-serif;
+    color: #767676;
+}
+
+a {
+    color: #65CEA7;
+}
+
+a:focus, a:active, a:hover {
+    outline: none;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+    color: #353F4F;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Open Sans', sans-serif;
+}
+h3{
+    font-size: 60px;
+}
+.panel-heading{
+    margin-left:auto;
+    margin-right:auto;
+
+}
+.panel-title{
+    padding:30px;
+    font-size: 60px;
+}

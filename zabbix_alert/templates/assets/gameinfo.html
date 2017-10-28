@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/bootcss/css/bootstrap.min.css" />
+</head>
+<body>
+   <table class="table table-striped">
+  <caption>项目列表</caption>
+  <thead>
+    <tr>
+      <th>所属游戏</th>
+      <th>实例ID</th>
+      <th>名称</th>
+      <th>主机名</th>
+      <th>类型</th>
+      <th>所在可用区</th>
+      <th>可用区</th>
+      <th>公网IP</th>
+      <th>内网IP</th>
+      <th>弹性IP</th>
+      <th>CPU</th>
+      <th>内存</th>
+      <th>付费方式</th>
+      <th>网络类型</th>
+      <th>带宽</th>
+      <th>创建时间</th>
+      <th>到期时间</th>
+      <th>标签</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in gameinfo %}
+    <tr>
+      <td>{{ i.project.name }}</td>
+      <td>{{ i.InstanceId }}</td>
+      <td>{{ i.InstanceName}}</td>
+      <td>{{ i.HostName }}</td>
+      <td>{{ i.Description }}</td>
+      <td>{{ i.Region }}</td>
+      <td>{{ i.Zone }}</td>
+      <td>{{ i.PublicIpAddress }}</td>
+      <td>{{ i.InnerIpAddress }}</td>
+      <td>{{ i.ElasticIPAddress}}</td>
+      <td>{{ i.CPU}}</td>
+      <td>{{ i.Memory }}</td>
+      <td>{{ i.ChargeType }}</td>
+      <td>{{ i.InstanceNetworkType }}</td>
+      <td>{{ i.Bandwidth }}</td>
+      <td>{{ i.CreationTime }}</td>
+      <td>{{ i.ExpiredTime }}</td>
+      <td>{{ i.TAG }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>
+{% block dir %}'dir_assets'{% endblock%}

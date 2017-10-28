@@ -1,0 +1,58 @@
+{% extends 'master/base.html' %}
+{% block title %}服务器列表{% endblock %}
+{% block content %}
+<form class="form-horizontal" action="assets/server_change_name/" method="POST" role="form">
+    <input type="hidden" id="instanceid" name='instanceid' value="{{instanceid}}">
+    <input type="hidden" id="server_type" name="server_type" value="{{server_type}}" name="">
+    {% csrf_token %}
+    <label  class="col-sm-2 control-label" style="margin-left:3%;">
+        <h4>服务器名称:</h4>
+    </label>
+    <div class="form-group">
+        <div class="col-sm-10" style="margin-left:8%;">
+            <input type="text" class="form-control" name="server_name" id="server_name" placeholder="server name">
+        </div>
+    </div>
+    {%if server_type == "aliyun"%}
+        <li class="active" style="margin-left:10%;"> 实例的显示名称,[2,128] 英文或中文字符,必须以大小字母或中文开头,可包含数字,".","_"或"-"。不能以http:// 和 https:// 开头</li>
+    {%else%}
+        <li class="active" style="margin-left:10%;"> 名称50位英文或中文字符</li>
+    {%endif%}
+  <label class="col-sm-2 control-label" style="margin-left:3%;margin-top:3%;"><h4>服务器描述:</h4></label>
+  <div class="form-group">
+    <textarea class="form-control col-sm-6" name="server_description" id="server_description" placeholder="description" style="width:80%; align:center;margin-left:10%;" rows="3"></textarea>
+  </div>
+  <li class="active" style="margin-left:10%;"> 实例的描述,[2, 256] 个字符。实例描述会显示在控制台。默认为空。不能以 http:// 和https:// 开头。</li>
+  {% include '_messages.html' %}
+  <div class="form-group" style="margin-top:3%">
+    <div class="col-sm-offset-6 col-sm-6">
+      <a  class="btn btn-success col-sm-2" onclick="change_name('{{instanceid}}')">提交</a>
+    </div>
+  </div>
+</form>
+
+<script type="text/javascript">
+
+  function change_name(instanceid){
+    url = '/assets/server_change_name/';
+    var name = $("#server_name").val();
+    var description = $('#server_description').val();
+    var server_type = $('#server_type').val();
+    // $.postJSON(url, {instanceid: instanceid, server_description: description, server_name: name, csrfmiddlewaretoken: {{csrf_token}}}, function(result){
+
+    // });
+    $.post(url, {'instanceid': instanceid, 'server_description': description, 'server_name': name, "csrfmiddlewaretoken": "{{csrf_token}}"},function(result){
+        alert(result);
+        //location.reload();
+        if (server_type == "aliyun") {
+          window.location="/assets/server_list/";
+        } else {
+          window.location="/assets/qcloud_list/";
+        };
+        
+    });
+}
+</script>
+
+{% endblock %}
+{% block dir %}'dir_assets'{% endblock%}

@@ -1,0 +1,85 @@
+{% extends  'cdn/index.html' %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block title %}<title>白山云Cloud, CDN刷新</title>{% endblock %}
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/xenon-core.css">
+    <link rel="stylesheet" href="/static/css/xenon-forms.css">
+    <link rel="stylesheet" href="/static/css/xenon-components.css">
+    <link rel="stylesheet" href="/static/css/xenon-skins.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <script src="/static/bootstrap/js/bootstrap.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    {% block header  %}<a href="#" class="active J_menuTab" data-id="#">白山云, CDN刷新</a>{% endblock %}
+
+</head>
+<body>
+{% block wanfa %}
+    <div class="desc" style="margin-left: 160px; margin-top: 30px;">
+        <p>白山云Cdn刷新</p>
+        <p>输入需要刷新对象目录的URL(需要http://或https://),一行一个例如：http://www.abc.com/test.html</p>
+        <p>每日刷新目录URL刷新数量最多不超过200个;;每次刷新提交的URL数量不超过20个, 刷新任务生效时间大约需要60秒钟</p>
+    <table class="code-list">
+        <tbody>
+            <tr>
+                <td>
+                        <textarea  class="form-control" rows="3" id="form3" name="text" style="width: 800px;height: 300px;max-width: 800px;max-height: 300px; resize: none;"></textarea>
+                        <p>
+                            <button type="button" class="btn btn-primary" id="refresh" style="!important; background: #337ab7; !important;width: 90px;">提交并刷新</button>
+                        </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+jQuery(document).ready(function () {
+    jQuery('#refresh').on('click', function () {
+        var text = document.getElementById('form3').value;
+        if (text.length < 8 ) {
+            swal({
+               title:[],
+               text: '输入：格式不正确,请输入正确Cdn URL',
+               type: "error"
+            }, function () {
+                window.location.reload();
+            });
+            return false
+        }
+        else {
+            var fom = jQuery('#form3').val();
+        }
+            jQuery.post('/whitecloud/push_white/', {
+                'fom': fom,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function (data) {
+                console.log(data);
+                if (data['ok']) {
+                    swal({
+                        title: data['data'],
+                        text:  "",
+                        type:  "success"
+                     }, function () {
+                        window.location.reload();
+                    });
+                } else {
+                     swal({
+                        title: data['data'],
+                        text:  "提交失败",
+                        type:  "error"
+                     }, function () {
+                        window.location.reload();
+                    });
+            }
+        },'json');
+    });
+});
+</script>
+{% endblock %}
+</body>
+</html>

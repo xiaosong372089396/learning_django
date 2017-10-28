@@ -1,0 +1,90 @@
+{% extends 'master/base.html' %}
+{% block title %}创建阿里云服务模板{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}
+{% block list %} 阿里云列表 {% endblock%}
+{% block content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered table-hover table-striped " id="server" style="margin-top: 3px;">
+
+                {% if phont_status%}
+                    <thead>
+                        <tr>
+                            <th>实例ID/名称</th>
+                            <th>IP地址</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="assets/server_detail/?instanceid={{server.instanceid}}">{{server.instance_name}}<br>{{server.instanceid}}</a></td>
+                            <td>{{server.public_ip}}</td>
+                        </tr>
+                    </tbody>
+                {%else%}
+                        <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>所在可用区</th>
+                                <th>实例规格</th>
+                                <th>镜像</th>
+                                <th>带宽</th>
+                                <th>磁盘</th>
+                                <th>数量</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for server in template_list %}
+                                <tr>
+                                    <td><input type="text" name="server_name" id="server_name"/></td>
+                                    <td>{{server.zone_id}}</td>
+                                    <td>{{server.cpu}}核{{server.mem}}G</td>
+                                    <td>{{server.image}}</td>
+                                    <td>带宽:{{server.bandwidth}}MB<br>付费方式：{{server.bandwidth_paytype}}</td>
+                                    <td>{{server.root_disk}}G系统盘</td>
+                                    <td><input type="text" name="server_num" id="server_num"/></td>
+                                    <td>
+                                    <a class="btn btn-success" onclick="create_servers(server.id)">创建</a>
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    {%endif%}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function create_servers(serverid){
+        url = "/assets/create_aliyun_template";
+        alert('暂未开通');
+        $('#select').modal("show");
+        $.post(url, {'serverid': serverid, 'csrfmiddlewaretoken': '{{ csrf_token }}' }, function(result){
+            alert(result);
+            $('#select').modal('hide');
+        });
+    }
+</script>
+
+
+<script src="/static/assets/js/server_operate.js"></script>
+
+{% endblock %}
+
+{% block modals%}
+    <div class="modal fade" id="select" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" align="middle">
+                <h1 class="modal-title">Loading</h1>
+                </div>
+            </div>  
+        </div>
+    </div>
+{%endblock%}
+
+{% block dir %}'dir_assets'{% endblock%}

@@ -1,0 +1,92 @@
+{% extends 'master/base.html' %}
+{% block title %}部门员工{% endblock %}
+{% block master %} 部门员工 {% endblock %}
+{% block content %}
+    <div class="row">
+        <a onclick="jQuery('#modal_add_department').modal('show', {backdrop: 'static'});" class=" btn btn-turquoise" style="margin-left:2%;">添加部门</a>
+        <a class="btn btn-info" href="/assets/emp_list/">全部员工</a>
+        <a class="btn btn-secondary" href="/assets/emp_detail/">全部物品</a>
+    </div>
+
+{%for line in departments%}
+    <div class="row">
+        {%for one in line%}
+                <div class="col-sm-3">
+                    <a href="/assets/emp_list/?status=True&query_name={{one.name}}">
+                    <div class="xe-widget xe-counter-block xe-counter-block-turquoise">
+                        <div class="xe-upper">
+                            
+                            <div class="xe-icon">
+                                <i class="fa-life-ring"></i>
+                            </div>
+                            <div class="xe-label">
+                                <strong class="num">{{one.name}}</strong>
+                                
+                            </div>
+                            
+                        </div>
+                        <div class="xe-lower">
+                            <div class="border"></div>
+                            
+                            <span>{{one.count}}在职</span>
+                            <strong data-count="this" data-from="0" data-to="14215" data-duration="2">{{one.over_count}}已离职</strong>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+        {%endfor%}
+    </div>
+{%endfor%}
+
+<script>
+
+function add_department(){
+    url = '/assets/add_department/';
+    var dep_name = $('#name').val();
+    $.get(url, {'name': dep_name}, function(result){
+        alert(result);
+        location.reload();
+    });
+
+}
+
+</script>
+{%endblock%}
+
+{%block modals%}
+    <div class="modal fade" id="modal_add_department">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">新建部门</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">名称</label>
+
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button onclick="add_department()" class="btn btn-info">创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}
+{% block dir %}'dir_assets'{% endblock%}

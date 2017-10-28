@@ -1,0 +1,86 @@
+{% extends 'master/base.html' %}
+{% block title %}云数据库列表{% endblock %}
+{% block master %}<a href="/assets/rds_type/">云数据库列表</a>{% endblock %}
+{% block content %}
+{% if user.profile.privilege != 1 %}
+<a href="/assets/create_rds/" class="btn btn-success">购买数据库</a>
+{%endif%}
+            <div class="row">
+            
+                <div class="col-md-12">
+                    
+                    <ul class="nav nav-tabs nav-tabs-justified">
+                        <li class="active">
+                            <a href="#home-3" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-home"></i></span>
+                                <span class="hidden-xs">腾讯云</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#profile-3" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-user"></i></span>
+                                <span class="hidden-xs">阿里云</span>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home-3">
+                            <div>
+                                <table class="table table-bordered table-striped">
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>名称</td>
+                                        <td>到期时间</td>
+                                        <td>状态</td>
+                                        <td>区域</td>
+                                        <td>配置</td>
+                                    </tr>
+                                    {%for one in qrds%}
+                                    <tr>
+                                        <td><a href="{{one.get_absolute_url}}">{{one.instanceid}}</a></td>
+                                        <td>{{one.instance_name}}</td>
+                                        <td><font color="{{one.status_color}}">{{one.deadline_time}}</font></td>
+                                        <td>{{one.status}}</td>
+                                        <td>{{one.zone_id}}</td>
+                                        <td>内存{{one.mem}}MB  硬盘{{one.volume}}G <br> {{one.max_query}}次/秒</td>
+                                    </tr>
+                                    {%endfor%}
+                                </table>
+                            </div>
+                            
+                        </div>
+                        <div class="tab-pane" id="profile-3">
+                            <div>
+                                <table class="table table table-bordered table-striped">
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>名称</td>
+                                        <td>状态</td>
+                                        <td>到期时间</td>
+                                        <td>区域</td>
+                                        <td>配置</td>
+                                    </tr>
+
+                                    {%for one in ards%}
+                                    <tr>
+                                        <td><a href="{{one.get_absolute_url}}">{{one.instanceid}}</a></td>
+                                        <td>{{one.instance_name}}</td>
+                                        <td>{{one.status}}</td>
+                                        <td><font color="{{one.status_color}}">{{one.deadline_time}}</font></td>
+                                        <td>{{one.zone_id}}</td>
+                                        <td>{{one.mem}}MB{{one.storage_size}}G <br> {{one.max_query}}次/秒</td>
+                                    </tr>
+                                    {%endfor%}
+                                </table>
+                            </div>
+                        </div>                     
+
+                    </div>
+                    
+                    
+                </div>
+            </div>
+
+{% endblock %}
+{% block dir %}'dir_assets'{% endblock%}

@@ -1,0 +1,278 @@
+{% extends 'master/base.html' %}
+{% block title %}服务器列表{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}
+{% block list %} 阿里云列表 {% endblock%}
+{% block content %}
+    <div>
+        <table class='table' style="width:30%;">
+            <form action="/assets/server_list/" method="GET">
+            <td>
+                <select id='query_key' name='query_key' style="margin-left:5%;height:30px;">
+                    {% for one in query_item%}
+                    <option value = '{{one}}'>{{one}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="text" name="query_value" id="query_value" value="{{query_value}}" placeholder="可模糊查询" style="margin-left:5%;height:30px;">
+            </td>
+            <td>
+                <button type="submit" class='btn btn-success' style="margin-left:5%;">搜索</button>
+            </td>
+            </form>
+
+            {% if query_value%}
+            <td>
+                <a  class="btn btn-info" onclick="jQuery('#batch_group_modal').modal('show',{backdrop: 'static'});">批量进组</a>
+            </td>
+            {%endif%}
+
+            {% if user.profile.privilege != 1 %}
+            <td>
+                <a href="/assets/create_aliyun/" class='btn btn-turquoise' target="_blank" style="margin-left:5%;">创建实例</a>
+            </td>
+            <td>
+                <a class='btn btn-turquoise' onclick="jQuery('#project_modal').modal('show', {backdrop:'static'});" style="margin-left:5%;">创建项目组</a>
+            </td>
+            {%endif%}
+        </table>
+        
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered table-striped " id="server">
+
+                {% if phont_status%}
+                    <tbody>
+                        <tr>
+                            <th>名称</th>
+                            <th>IP地址</th>
+                        </tr>
+                        <tr>
+                            <td><a href="assets/server_detail/?instanceid={{server.instanceid}}">{{server.instance_name}}</td>
+                            <td>{{server.public_ip}}</td>
+                        </tr>
+                    </tbody>
+                {%else%}
+                        <tbody>
+                            <tr style="color:black;">
+                                <th>名称</th>
+                                <th>所在可用区</th>
+                                <th>IP地址</th>
+                                <th>状态</th>
+                                <th>配置</th>
+                                <th>到期时间</th>
+                                <th>操作</th>
+                            </tr>
+                        
+                            {% for server in page %}
+                                <tr style="color:black;">
+                                    <td><a href="assets/server_detail/?instanceid={{server.instanceid}}" style="color:black;">{{server.instance_name}}</td>
+                                    <td>{{server.zone_id}}</td>
+                                    <td>公网{{server.public_ip}}<br>内网{{server.inner_ip}}</td>
+                                    <td>
+                                        {%if server.status == "Starting"%}
+                                            启动中
+                                        {%elif server.status == "Running"%}
+                                            运行中
+                                        {%elif server.status == "Stopping"%}
+                                            停止
+                                        {%else%}
+                                            {{server.status}}
+                                        {%endif%}
+                                    </td>
+                                    <td>{{server.cpu}}核{{server.memory}}MB</td>
+                                    <td><font color="{{server.status_color}}">{{server.expired_time}}到期</font></td>
+                                    <td>
+
+                                        {%if server.mem == "未初始化"%}
+                                            <a href="" class="btn btn-turquoise">上线</a>
+                                            <a class="btn btn-turquoise" onclick="online('{{server.id}}')">已上线</a>
+                                        {%else%}
+                                            <li class="dropdown user-profile">
+                                            <a href="#" data-toggle="dropdown">
+                                                <span style="color:black;">操作</span>
+                                            </a>
+                                            <ul class="dropdown-menu user-profile-menu list-unstyled">
+                                                {% if user.profile.privilege > 1 %}
+                                                    <li>
+                                                        <a href="/assets/server_change_name/?instanceid={{server.instanceid}}">
+                                                            修改实例名
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a onclick="server_start('{{server.instanceid}}')">
+                                                            启动
+                                                        </a>
+                                                    </li>
+                                                    {% if user.profile.privilege > 2 %}
+                                                        <li>
+                                                            <a onclick="server_stop('{{server.instanceid}}')">
+                                                                停止
+                                                            </a>
+                                                        </li>
+
+                                                        <li class="last">
+                                                            <a onclick="server_reboot('{{server.instanceid}}')">
+                                                                重启
+                                                            </a>
+                                                        </li>
+                                                    {%endif%}
+                                                {%else%}
+                                                <li class="last">
+                                                    <a href="#">
+                                                        没有权限呦
+                                                    </a>
+                                                </li>
+                                                {%endif%}
+                                            </ul>
+                                        </li>
+                                        {%endif%}
+                                        
+
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    {%endif%}
+                </table>
+            </div>
+        </div>
+            <ul class="pager" style="float: right;">
+
+                {% if page.has_previous %}
+                    <li><a href="/assets/server_list/">首页</a></li>
+                    <li><a href="/assets/server_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+
+                {% if page.has_next %}
+                    <li><a href="/assets/server_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.next_page_number }}">后一页</a></li>
+                    <li><a href="/assets/server_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum"></li>
+                    <li onclick="window.location.href='/assets/server_list/?query_key={{query_key}}&query_value={{query_value}}&page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                    <li><a href="#">第{{page.number}}/{{page.paginator.num_pages}}页   共{{ page.paginator.num_pages}}页</a></li>
+            </ul>
+    </div>
+
+</div>
+
+</div>
+
+<script src="/static/assets/js/server_operate.js"></script>
+
+{% endblock %}
+
+{% block modals%}
+    <div class="modal fade" id="batch_group_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">修改分组</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="instanceid" id="instanceid" value="{{server.instanceid}}">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">组名</label>
+                                <select class="form-control" id="group_name" name="group_name">
+                                    {%for one in groups%}
+                                        <option value="{{one.name}}">{{one.name}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button onclick="batch_group()" class="btn btn-info">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="project_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">添加项目组</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">项目名称:</label>
+                                <input type="text" class="form-control" id="project_name" name="project_name"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button onclick="create_project()" class="btn btn-info">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript">
+function create_project(){
+    var project_name = $('#project_name').val();
+    window.location="/assets/create_project/?type=aliyun&name=" + project_name;
+}
+
+function online(server_id){
+    var info = confirm("您确定上线已完成?");
+    var url = "/assets/online/";
+    if (info) {
+        $.get(url, {'server_id': server_id}, function(result){
+            alert(result);
+            location.reload();
+        });
+    };
+}
+
+function batch_group() {
+    var group_name = $('#group_name').val();
+    var query_key = $('#query_key').val();
+    var query_value = $('#query_value').val();
+    var status = confirm('确定批量修改分组么?');
+    if (status) {
+        $.post('/assets/batch_group/', {'group_name': group_name, 'query_key': query_key, 'query_value': query_value}, function(result){
+            alert(result);
+            location.reload();
+        });
+    };
+
+}
+</script>
+
+{% endblock%}
+
+
+{% block dir %}'dir_assets'{% endblock%}

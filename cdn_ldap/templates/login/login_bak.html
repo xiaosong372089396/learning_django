@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+        {% block title %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Qcloud&nbsp;</title>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.min93e3.css?v=4.4.0" />
+    <link rel="stylesheet" type="text/css" href="/static/css/animate.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/style.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/login.min.css" />
+    <link rel="shortcut icon" href="/static/img/logo1.png" />
+        {% endblock %}
+</head>
+
+<body class="signin">
+    <div class="signinpanel">
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="signin-info">
+                    <div class="m-b"></div>
+                    <h4>欢迎使用<strong>闲徕&nbsp;客户端Cloud</strong></h4>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <form method="post" action="/login/"> <!-- "/" -->
+                    <h4 class="no-margins">登录：</h4>
+                    <p class="m-t-md">闲徕&nbsp;Cloud</p>
+                     {% csrf_token %}
+                     <h3>{{ login_error }}</h3>
+                    <input type="text" name="username"   class="form-control uname" placeholder="用户名"  required autofocus />
+                    <input type="password" name="password"  class="form-control pword m-b" placeholder="密码"  required autofocus />
+                    <input type="submit" class="btn btn-success" value="登录"><!-- btn-block -->
+                 </form>
+            </div>
+        </div>
+        <div class="signup-footer">
+            <div class="pull-left">
+                &copy; 2017 闲徕团队&nbsp;客户端Cloud
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<!--  name = uf.id.html_name, value = uf.id.value -->
+<!-- form.username.html_name   from.username.value ,    form.password.html_name,  form.password.value-->

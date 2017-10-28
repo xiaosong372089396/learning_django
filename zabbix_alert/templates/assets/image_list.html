@@ -1,0 +1,32 @@
+{% extends 'master/base.html' %}
+{% block title %}Image列表{% endblock %}
+{% block content %}
+
+        <table class="table table-hover table-striped" id="server" style="margin-top: 3px;">
+            <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>状态</th>
+                    <th>系统名称</th>
+                    <th>描述</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            {%for image in images%}
+                <tr>
+                    <td>{{image.ImageName}}</td>
+                    <td>{{image.Status}}</td>
+                    <td>{{image.OSName}}</td>
+                    <td>{{image.Description}}</td>
+                    <td>{{image.ImageName}}</td>
+                </tr>
+            <tbody>
+
+            </tbody>
+        </table>
+{%endblock%}
+
+{% block dir %}'dir_assets'{% endblock%}
+
+
+{u'Status': u'Available', u'ProductCode': u'', u'Platform': u'Windows Server 2012', u'Description': u'', u'IsCopied': False, u'Tags': {u'Tag': []}, u'IsSubscribed': False, u'IsSelfShared': u'', u'CreationTime': u'2016-09-29T02:46:05Z', u'OSName': u'Windows Server  2012 \u6807\u51c6\u7248 64\u4f4d\u4e2d\u6587\u7248', u'DiskDeviceMappings': {u'DiskDeviceMapping': [{u'Format': u'', u'ImportOSSBucket': u'', u'Device': u'/dev/xvdb', u'SnapshotId': u's-2ze0vmnn5rfga0n8u5hb', u'ImportOSSObject': u'', u'Size': u'50'}, {u'Format': u'', u'ImportOSSBucket': u'', u'Device': u'/dev/xvda', u'SnapshotId': u's-2ze0vmnn5rfga0n8u5hc', u'ImportOSSObject': u'', u'Size': u'40'}]}, u'ImageId': u'm-25rt6y00b', u'Usage': u'none', u'ImageName': u'm-25rt6y00b', u'Architecture': u'x86_64', u'ImageOwnerAlias': u'self', u'OSType': u'windows', u'Progress': u'100%', u'Size': 40, u'ImageVersion': u'', u'IsSupportIoOptimized': True}

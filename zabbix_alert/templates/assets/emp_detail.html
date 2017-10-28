@@ -1,0 +1,194 @@
+{% extends 'master/base.html' %}
+{% block title %}
+    {%if employee%}
+        {{employee.name}}的物品清单
+    {%else%}
+        全部的物品清单
+    {%endif%}
+{% endblock %}
+
+{% block master %}<a href="/assets/emp_department/">部门</a>{% endblock %}
+{% block list %} 物品清单 {% endblock%}
+
+{% block content %}
+    {%if employee.status%}
+        <a onclick="jQuery('#modal_emp_detail').modal('show', {backdrop: 'static'});" class="btn btn-black" style="margin-left:2%;">新建</a>
+    {%elif not employee%}
+        <div class="col-sm-2 ">
+                <select class="form-control" id="query_types" name="query_types" onclick="change_region()">
+                    {%for one in query_item_types%}
+                        <option value="{{one}}">{{one}}</option>
+                    {%endfor%}
+                </select>
+        </div>
+    {%endif%}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-hover table-striped" id="server" style="margin-top: 1px;">
+                        <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>出借人</th>
+                                <th>物品类别</th>
+                                <th>物品编号</th>
+                                <th>出借时间</th>
+                                <th>归还时间</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for item in page%}
+                                <tr>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.employee}}</td>
+                                    <td>{{item.item_type}}</td>
+                                    <td>{{item.item_num}}</td>
+                                    <td>{{item.creat_time}}</td>
+                                    <td>
+                                        {%if item.is_return%}
+                                            {{item.return_time}}
+                                        {%else%}
+                                            <a onclick="item_return('{{item.id}}')" class="btn btn-info"> 未归还</a><br>
+                                        {%endif%}
+                                    </td>
+                                    <td>{{item.note}}</td>
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+</div>
+    <div>
+            <ul class="pager" style="float: right">
+
+                {% if page.has_previous %}
+                    <li><a href="/assets/emp_detail/">首页</a></li>
+                    <li><a href="/assets/emp_detail/?query_types={{query_types}}&page={{ page.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+
+                {% if page.has_next %}
+                    <li><a href="/assets/emp_detail/?query_types={{query_types}}&page={{ page.next_page_number }}">后一页</a></li>
+                    <li><a href="/assets/emp_detail/?query_types={{query_types}}&page={{ page.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum"></li>
+                    <li onclick="window.location.href='/assets/emp_detail/?query_types={{query_types}}&page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                    <li><a href="#">第{{page.number}}/{{page.paginator.num_pages}}页   共{{ page.paginator.num_pages}}页</a></li>
+            </ul>
+    </div>
+
+<script>
+
+
+function submit_emp_detail(){
+    var name = $('#name').val();
+    var item_num = $('#item_num').val();
+    var data = $('#form_emp_detail').serialize();
+    var url = '/assets/create_item_detail/';
+    if (name=='') {
+        alert('请填写名称');
+    }else if (item_num=='') {
+        alert('请填写编号');
+    }else{
+        $.get(url, data, function(result){
+            alert(result);
+            location.reload();
+        });
+    };
+}
+
+</script>
+<script src="/static/assets/js/server_operate.js"></script>
+{%endblock%}
+
+{%block modals%}
+
+    <div class="modal fade" id="modal_emp_detail">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">出借</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form method="GET" id="form_emp_detail">
+                        {% csrf_token %}
+                        <input type="hidden" name="employee" value="{{employee.id}}">
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+                                    <label for="field-1" class="control-label">名称</label>
+
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+                                    <label for="field-2" class="control-label">类别</label>
+                                    <select class="form-control"  name="item_type">
+                                        <option value="电脑整机">电脑整机</option>
+                                        <option value="电脑配件">电脑配件</option>
+                                        <option value="外设产品">外设产品</option>
+                                        <option value="游戏设备">游戏设备</option>
+                                        <option value="网络产品">网络产品</option>
+                                        <option value="办公设备">办公设备</option>
+                                        <option value="数码设备">数码设备</option>
+                                        <option value="其他类">其他类</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="form-group">
+                                    <label for="field-3" class="control-label">编号</label>
+
+                                    <input type="text" class="form-control" id="item_num" name="item_num">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="form-group no-margin">
+                                    <label for="field-7" class="control-label">备注</label>
+
+                                    <textarea class="form-control autogrow" name="note" placeholder="备注"></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <a onclick="submit_emp_detail()" class="btn btn-info">提交</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{%endblock%}
+{% block dir %}'dir_assets'{% endblock%}

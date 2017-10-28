@@ -1,0 +1,402 @@
+{% extends 'master/base.html' %}
+{% block title %}新建阿里云服务器{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型啊</a>{% endblock %}
+{% block list %}<a href="/assets/server_list/"> 阿里云列表</a> {% endblock%}
+{% block content %}
+<a href="/assets/create_aliyun_template/" class='btn btn-success' style="margin-left:1%;">通过模板创建实例</a>
+<div class="panel panel-default">
+    <div class="panel-body" style="margin:3%;">
+            <form id="create_form" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="many_servers" id="many_servers" value="" />
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <select class="form-control" style="margin-left:5%" id="change_instance_type" name="change_instance_type" onclick="change_instance_type_function()">
+                                    <option id="instanceType" value="instanceType"><h4>实例规格:</h4></option>
+                                    <option id="io_instanceType" value="io_instanceType"><h4>IO优化实例:</h4></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="form-group" id="no_io" style="display:">
+                                <select type="hidden" class="form-control" id="no_InstanceType" name="no_InstanceType">
+                                    {%for one in instance_types%}
+                                            <option value="{{one.key}}">{{one.value}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="form-group" id="is_io" style="display:none">
+                                <select type="hidden" class="form-control" id="io_InstanceType" name="io_InstanceType">
+                                    {%for one in io_instance_types%}
+                                            <option value="{{one.key}}">{{one.value}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">可用区域:</label>
+                                <select class="form-control" id="ZoneId", name="ZoneId">
+                                    <option value="cn-hangzhou-c">华东 1 可用区 C</option>
+                                    <option value="cn-hangzhou-b">华东 1 可用区 B</option>
+                                    <option value="cn-hangzhou-d">华东 1 可用区 D</option>
+                                    <option value="cn-hangzhou-e">华东 1 可用区 E</option>
+                                    <option value="cn-beijing-a">华北 2 可用区 A</option>
+                                    <option value="cn-beijing-c">华北 2 可用区 C</option>
+                                    <option value="cn-shanghai-a">华东 2 可用区 A</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">安全组名称:</label>
+                                <select class="form-control" id="SecurityGroupId" name="SecurityGroupId">
+                                    <option value="sg-236rhp1p5">游戏服务器规则</option>
+                                    <option value="sg-234345j61">centos6.5外网游戏服务器</option>
+                                    <option value="sg-235sjfiaw">游戏测试服务器</option>
+                                    <option value="sg-23updgmxa">游戏服务器网关</option>
+                                    <option value="sg-239avvkrm">web服务器</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">镜像:</label>
+                            <select class="form-control" id="ImageId" name="ImageId">
+                                {%for image in images%}
+                                    <option value="{{image.key}}">{{image.value}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">宽带付费方式:</label>
+                            <select class="form-control" id="InternetChargeType" name="InternetChargeType">
+                                <option value="PayByTraffic">按流量付费</option>
+                                <option value="PayByBandwidth">固定宽带付费</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">系统盘大小:</label>
+                            <input type="text" class="form-control" name="SystemDisk.Size" id="SystemDisk.Size" value="100">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">数据盘大小:</label>
+                            <input type="text" class="form-control" name="DataDisk.1.Size" id="DataDisk.1.Size">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">宽带:</label>
+                            <input type="text" class="form-control" name="InternetMaxBandwidthOut" id="InternetMaxBandwidthOut"  value="100">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">付费方式:</label>
+                            <select class="form-control" id="InstanceChargeType" name="InstanceChargeType">
+                                <option value="PostPaid">按量付费</option>
+                                <option value="PrePaid">包年包月</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">购买时长(月):</label>
+                            <input type="text" class="form-control" name="Period" id="Period"  value="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                            <div class="row">
+                                <label >服务器名称:(<span id="many_name" name='many_name'></span><a onclick="change_name()">修
+                                改</a>)</label>
+                            </div>
+                            <input type="text" class="form-control" name="InstanceName" id="InstanceName">
+                    </div>
+                    <div class="col-md-6 form-group">
+                            <label class="control-label">购买数量:</label>
+                            <input type="text" class="form-control" name="num" id="num">
+                    </div>
+                </div>
+                <div class="row">
+                    <a onclick="add_name()" class="btn btn-black">添加名称</a>
+                    <a onclick="add_names()" class="btn btn-black">批量添加名称</a>
+                </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group no-margin">
+                                <label for="field-7" class="control-label">服务器描述:</label>
+                                <textarea class="form-control autogrow" name='Description' id="Description"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                <div class="form-group-separator"></div>
+
+
+              <div class="form-group" style="margin-top:3%">
+                <div class="col-sm-offset-6 col-sm-5">
+                  <a  class="btn btn-success col-sm-2" onclick="create_submit()" data-target="#myModal">提交</a>
+                </div>
+              </div>
+            </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+//修改服务器的名称字符串
+function change_name() {
+    var names = $('#many_name').html();
+    $('#change_server').val(names);
+    var modal=$(this);
+    modal.find(".modal-body input[name='change_server']").val(names); 
+    $('#change_name').modal('show');
+}
+
+
+function save_change(){
+    var names = $('#change_server').val();
+    document.getElementById('many_name').innerHTML = names;//表单里真正传得是many_servers,而不是显示得many_name
+    document.getElementById('many_servers').value = names;
+    $('#change_name').modal('hide');
+
+}
+
+
+function add_names(){
+    $('#add_names').modal('show');
+}
+
+
+//名字可以根据数量批量添加
+function save_num_names(){
+    var names = $('#add_num_names').val();
+    var start = Number($('#start').val());
+    var end = Number($('#end').val()) + 1;
+    var result = '';
+    for (var i = start; i < end; i++) {
+        result = result + names + String(i) + '服务器1台,'
+    };
+    $('#add_names').modal('hide');
+    var new_name = $('#many_name').html();
+    names = result + new_name
+    document.getElementById('many_name').innerHTML = names;//表单里真正传得是many_servers,而不是显示得many_name
+    document.getElementById('many_servers').value = names;
+}
+
+
+//添加服务器名称和数量
+function add_name(){
+    var name = $('#InstanceName');
+    var num = $('#num');
+    var new_name = $('#many_name').html();
+    alert('添加服务器名称');
+    new_name = new_name + name.val() + '服务器' + num.val() + '台,';
+    document.getElementById('num').value="";
+    document.getElementById("InstanceName").value="";
+    document.getElementById('many_name').innerHTML = new_name;
+    document.getElementById('many_servers').value = new_name;//表单里真正传得是many_servers,而不是显示得many_name
+}
+
+
+function loading(flag){
+    var oLoading = $('#loading');
+    if (oLoading){
+        if(flag){
+            $('#myModal').modal('show');
+        }else{
+            $('#myModal').modal('hide');
+        };
+    };
+}
+
+//判断是否是IO优化的服务器
+function change_instance_type_function(){
+    var is_io_instance = $('#change_instance_type').val();
+    if (is_io_instance=='io_instanceType') {
+        document.getElementById("no_io").style.display="none";
+        document.getElementById("is_io").style.display="";
+    } else {
+        document.getElementById("is_io").style.display="none";
+        document.getElementById("no_io").style.display="";
+    };
+
+}
+
+
+function checkForm(){
+    var oInstance_name = $('#InstanceName');
+    var hehe = oInstance_name.val();
+    var one = hehe.match('^[a-zA-Z\u4e00-\u9FFF][\u3400-\u9FFFA-Za-z0-9_.-]{1,200}$');
+    if(one){
+        if (oInstance_name.val() == '') {
+            alert("need instance name");
+            oInstance_name.focus();
+            return false;
+        };
+    }else{
+        alert('服务器名不合要求');
+        oInstance_name.focus();
+        return false;
+    };
+
+    var oPassword1 = $('#passwd1');
+    var oPassword2 = $('#passwd2');
+    if (oPassword1.val() == ''){
+        alert('请填写密码');
+        oPassword1.focus();
+        return false;
+    };
+    if (oPassword2.val() == ''){
+        alert('请确认密码');
+        oPassword2.focus();
+        return false;
+    };
+    if (oPassword2.val() != oPassword1.val()){
+        alert('密码不一致');
+        oPassword1.focus();
+        return false;
+    };
+
+    oBandwidth = $('#InternetMaxBandwidthOut');
+    if(oBandwidth.val() == ''){
+        alert('请输入带宽');
+        oBandwidth.focus();
+        return false;
+    };
+
+    oSystemDisk = $('#SystemDisk.Size');
+    if(oSystemDisk.val() == ''){
+        alert('请输入系统盘大小');
+        oSystemDisk.focus();
+        return false;
+    };
+
+    oDataDisk = $('#DataDisk.n.Size');
+    if(oDataDisk.val() == ''){
+        alert('请输入数据盘大小');
+        oDataDisk.focus();
+        return false;
+    };
+
+    oMonths = $('#Period');
+    if(oMonths.val() == ''){
+        alert('请输入购买月份');
+        oMonths.focus();
+        return false;
+    };
+
+    oNum = $('#num');
+    if(oNum.val() == ''){
+        alert('请输入购买服务器数量');
+        oNum.focus();
+        return false;
+
+    };
+    return true;
+}
+
+function create_submit(){
+    //alert($('#create_form').serialize());
+    var data = $('#create_form').serialize();
+    $('#select').modal('show');
+    if(true){
+        var url = '/assets/create_aliyun/'
+        $.post(url, data,function(result){
+            $('#select').modal('hide');
+            var result_status = result.indexOf('失败');
+            if (result_status != -1) {
+                alert(result);
+            } else {
+                alert(result);
+                window.location="/assets/server_list/";
+            };
+            
+        });        
+    };
+}
+</script>
+
+{% endblock %}
+
+{%block modals%}
+    <div class="modal fade" id="select" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" align="middle">
+                <h1 class="modal-title">Loading</h1>
+                </div>
+            </div>  
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="change_name" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" align="middle">
+                    <div class="row">
+                        <input type="text" name="change_server" class="form-control" id="change_server" value="">
+                    </div>
+                    
+                    <br>
+                    <a onclick="save_change()" class="btn btn-success">提交</a>
+                </div>
+            </div>  
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="add_names" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" align="middle">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" name="add_num_names" class="form-control" id="add_num_names" placeholder="请输入名字(例如HNMJ_)">
+                        </div>
+                        <div class="col-sm-1">
+                                <input type="text" name="start" id="start" class="form-control" style="width: 60px;" placeholder="数字" />
+                        </div>
+                        <div class="col-sm-1" style="padding-left: 45px;">
+                            <span>至</span>
+                        </div> 
+                        <div class="col-sm-1">
+                            <input type="text"  class="form-control"  name="end" id="end" style="width: 60px;" placeholder="数字"/>
+                        </div>
+                    </div>
+                    <br>
+                    <a onclick="save_num_names()" class="btn btn-success">提交</a>
+                </div>
+            </div>  
+        </div>
+    </div
+
+{%endblock%}
+
+{% block dir %}'dir_assets'{% endblock%}
+

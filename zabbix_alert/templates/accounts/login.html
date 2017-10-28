@@ -1,0 +1,263 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Xenon Boostrap Admin Panel" />
+	<meta name="author" content="" />
+	<title>闲徕监控告警平台 - Login</title>
+    <link rel="stylesheet" href="/static/master/fonts/fontawesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/plugins/bootcss/css/bootstrap.css">
+	<link rel="stylesheet" href="/static/plugins/bootcss/css/bootstrap.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-core.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-forms.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-components.css">
+	<link rel="stylesheet" href="/static/master/css/xenon-skins.css">
+	<link rel="stylesheet" href="/static/master/css/custom.css">
+	<script src="/static/master/js/jquery.min.js"></script>
+</head>
+<body class="page-body login-page">
+
+	<div class="login-container">
+
+		<div class="row">
+
+			<div class="col-sm-6">
+
+				<script type="text/javascript">
+					jQuery(document).ready(function($)
+					{
+						// Reveal Login form
+						setTimeout(function(){ $(".fade-in-effect").addClass('in'); }, 1);
+
+
+						// Validation and Ajax action
+						$("form#login").validate({
+							rules: {
+								username: {
+									required: true
+								},
+
+								passwd: {
+									required: true
+								}
+							},
+
+							messages: {
+								username: {
+									required: 'Please enter your username.'
+								},
+
+								passwd: {
+									required: 'Please enter your password.'
+								}
+							},
+
+							// Form Processing via AJAX
+							submitHandler: function(form)
+							{
+								show_loading_bar(70); // Fill progress bar to 70% (just a given value)
+
+								var opts = {
+									"closeButton": true,
+									"debug": false,
+									"positionClass": "toast-top-full-width",
+									"onclick": null,
+									"showDuration": "300",
+									"hideDuration": "1000",
+									"timeOut": "5000",
+									"extendedTimeOut": "1000",
+									"showEasing": "swing",
+									"hideEasing": "linear",
+									"showMethod": "fadeIn",
+									"hideMethod": "fadeOut"
+								};
+
+								$.ajax({
+									url: "data/login-check.php",
+									method: 'POST',
+									dataType: 'json',
+									data: {
+										do_login: true,
+										username: $(form).find('#username').val(),
+										passwd: $(form).find('#passwd').val(),
+									},
+									success: function(resp)
+									{
+										show_loading_bar({
+											delay: .5,
+											pct: 100,
+											finish: function(){
+
+												// Redirect after successful login page (when progress bar reaches 100%)
+												if(resp.accessGranted)
+												{
+													window.location.href = 'dashboard-1.html';
+												}
+																							else
+												{
+													toastr.error("You have entered wrong password, please try again. User and password is <strong>demo/demo</strong> :)", "Invalid Login!", opts);
+													$passwd.select();
+												}
+																						}
+										});
+
+																		}
+								});
+
+							}
+						});
+
+						// Set Form focus
+						$("form#login .form-group:has(.form-control):first .form-control").focus();
+					});
+				</script>
+
+				<!-- Errors container -->
+				<div class="errors-container">
+
+
+				</div>
+
+				<!-- Add class "fade-in-effect" for login form effect -->
+				<form method="post" role="form" id="login" class="login-form fade-in-effect">
+                    {% csrf_token %}
+                    <input type="hidden" name="one" id="one"/>
+					<div class="login-header">
+						<a href="#" class="logo">
+							<img src="/static/accounts/img/logo.png" alt="" width="" />
+						</a>
+
+						<p>欢迎使用监控告警平台</p>
+					</div>
+
+
+					<div class="form-group">
+						<input type="text" class="form-control input-dark" name="{{ form.username.html_name }}" id="username" value="{{ form.username.value }}" autocomplete="off"  placeholder="用户名"/>
+					</div>
+
+					<div class="form-group">
+						<input type="password" class="form-control input-dark"  name="{{ form.password.html_name }}"  id="passwd" value="{{ form.password.value }}" autocomplete="off" placeholder="密码" />
+					</div>
+                    {% include '_messages.html' %}
+					<div class="form-group">
+						<button type="submit" class="btn btn-dark  btn-block text-left">
+							<i class="fa-lock"></i>
+							登录
+						</button>
+						<a onclick="jQuery('#register_module').modal('show', {backdrop: 'static'});">注册</a>
+					</div>
+
+				</form>
+
+				<!-- External login -->
+			</div>
+
+		</div>
+
+	</div>
+
+
+    <div class="modal fade" id="register_module">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="create_user_module">
+                    {%csrf_token%}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="姓名">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group no-margin">
+                                        <input type="text" class="form-control" name="mail" id="mail" placeholder="邮箱">
+                                    </div> 
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group no-margin">
+                                        <a onclick="send_()" class="btn btn-info" style="color: black;">发送验证码</a>
+                                    </div>
+                                </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="ver" id="ver" placeholder="请输入验证码">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <br>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+                    <a onclick="create_user()" class="btn btn-info" style="color: black;">提交</a>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+	<!-- Bottom Scripts -->
+    <script src="/static/plugins/bootcss/js/bootstrap.js"></script>
+	<script src="/static/master/js/TweenMax.min.js"></script>
+	<script src="/static/master/js/resizeable.js"></script>
+	<script src="/static/master/js/joinable.js"></script>
+	<script src="/static/master/js/xenon-api.js"></script>
+	<script src="/static/master/js/xenon-toggles.js"></script>
+	<!-- Imported scripts on this page -->
+	<script src="/static/plugins/toastr/toastr.min.js"></script>
+	<!-- JavaScripts initializations and stuff -->
+	<script src="/static/master/js/xenon-custom.js"></script>
+	<!-- JavaScripts initializations and stuff -->
+
+<script type="text/javascript">
+
+function send_(){
+    var data = $('#mail').val();
+    if (true){
+        var url="/accounts/create_user/";
+        $.get(url, {'mail': data}, function(result){
+            var result_status = result.info.indexOf("失败");
+            $('#select').modal('hide');
+            if (result_status == "-1") {
+                alert(result.info);
+                $('#one').val(result.verify_num);
+            } else {
+                alert(result.info);
+            };
+        });
+    };
+}
+
+function create_user(){
+    var verify_num = $('#one').val();
+    var data = $('#create_user_module').serialize();
+    var ver = $('#ver').val();
+    if (verify_num == ver) {
+        var url="/accounts/create_user/";
+        $.post(url, data, function(result){
+            var result_status = result.indexOf('失败');
+            if (result_status == '-1') {
+                alert(result);
+                location.reload();
+            } else {
+                alert(result);
+            };
+        });
+    } else {
+        alert('验证码错误,请核验');
+    };
+}
+
+</script>
+
+</body>
+</html>

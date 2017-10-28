@@ -1,0 +1,217 @@
+ {% extends 'master/base.html' %}
+{% block title %}修改用户信息{% endblock %}
+{% block master %}<a href="/accounts/department_list/">部门列表</a>{% endblock %}
+{% block list %}修改用户信息{% endblock %}
+{% block content %}
+
+                <div class="col-md-12">
+                    
+                    <ul class="nav nav-tabs nav-tabs-justified">
+                        <li class="active">
+                            <a href="#infos" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-infos"></i></span>
+                                <span class="hidden-xs">基本信息</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#home" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-home"></i></span>
+                                <span class="hidden-xs">修改密码</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#profile" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-user"></i></span>
+                                <span class="hidden-xs">修改头像</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#messages" data-toggle="tab">
+                                <span class="visible-xs"><i class="fa-envelope-o"></i></span>
+                                <span class="hidden-xs">修改手机号</span>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="infos">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table class="table table table-bordered table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row" style="width:40%;">名称</th>
+                                                <td>{{user.profile.name}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" style="width:40%;">部门</th>
+                                                <td>{{user.profile.department}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" style="width:40%;">手机号</th>
+                                                <td>{{user.profile.cell}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" style="width:40%;">邮箱</th>
+                                                <td>{{user.profile.mail}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="home">
+                            <form id="password_form" enctype="multipart/form-data" method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">旧密码:</label>
+                                            <input type="password" class="form-control" id="password" name="password">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">新密码:</label>
+                                            <input type="password" class="form-control" id="new_password" name="new_password">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">确认密码:</label>
+                                            <input type="password" class="form-control" id="new_password1" name="new_password1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <a onclick="update_password()"  class="btn btn-info" style="margin-left:40%;margin-top:3%;">提交</a>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane" id="profile">
+                            
+                            <form action="/accounts/update_head/" enctype="multipart/form-data" method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">上传头像:</label>
+                                            <input type="file" class="form-control" id="file" name="file">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button  type="submit" class="btn btn-info" help_text="mingming sbushi angle" style="margin-left:40%;margin-top:3%;">提交</button>
+                            </form>
+                                
+                        </div>
+                        <div class="tab-pane" id="messages">
+                            
+                            <form id="cell_form" enctype="multipart/form-data" method="get">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="new_cell" name="new_cell" placeholder="{{user.profile.cell}}(请输入新的手机号)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <a class="btn btn-info" onclick="send_cell_checknum()">发送验证码</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="check_num" name="check_num" placeholder="请输入验证码" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <a onclick="update_cell()" class="btn btn-info" style="margin-left:40%;margin-top:3%;">提交</a>
+                            </form>
+                    
+                        </div>
+                        
+                    </div>
+                    
+                    
+                </div>
+
+
+<script type="text/javascript">
+function checkpassword(){
+    var oPassword1 = $('#new_password');
+    var oPassword2 = $('#new_password1');
+    if (oPassword1.val() == ''){
+        alert('请填写密码');
+        oPassword1.focus();
+        return false;
+    };
+    if (oPassword2.val() == ''){
+        alert('请确认密码');
+        oPassword2.focus();
+        return false;
+    };
+    if (oPassword2.val() != oPassword1.val()){
+        alert('密码不一致');
+        oPassword1.focus();
+        return false;
+    };
+    return true;
+}
+
+
+function update_password() {
+    var url = '/accounts/update_password/';
+    var data = $('#password_form').serialize();
+    if(checkpassword()){
+        $.post(url, data,function(result){
+            var result_status = result.indexOf('失败');
+            if (result_status != '-1') {
+                alert(result);
+            } else {
+                alert(result);
+                location.reload();
+            };
+        });        
+    };
+}
+
+
+function send_cell_checknum(){
+    var cell = $('#new_cell').val();
+    if (cell) {
+        var url = "/accounts/send_cell_checknum/";
+        $.post(url, {'cell': cell, }, function(result){
+            alert(result);
+        });
+    };
+}
+
+function update_cell(){
+    var cell = $('#new_cell').val();
+    var check_num =$('#check_num').val();
+    if (cell) {
+        var url = "/accounts/update_cell/";
+        $.post(url, {'cell': cell, 'num': check_num}, function(result){
+            var result_status = result.indexOf('失败');
+            if (result_status != '-1') {
+                alert(result);
+            } else {
+                alert(result);
+                location.reload();
+            };
+        });
+    };
+}
+
+</script>
+
+
+{%endblock%}
+
+
+{% block dir %}'dir_set'{% endblock%}

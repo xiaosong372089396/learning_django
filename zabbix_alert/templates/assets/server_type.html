@@ -1,0 +1,53 @@
+{% extends 'master/base.html' %}
+{% block title %}服务器类型{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}
+{% block content %}
+
+<div class="col-sm-6">
+
+    <div class="xe-widget xe-vertical-counter xe-vertical-counter-white" data-count=".num" data-from="0" data-to="128" data-duration="4">
+        <div class="xe-icon">
+            <i class="fa-cloud"></i>
+            <h2>阿里云</h2>
+        </div>
+            <div class="xe-label">
+                <a href="/assets/server_list/"><strong class="num">{{aliyun.server_count}}</strong></a>
+                <span>服务器数量（包括已被释放的）</span>
+            </div>
+            <div class="xe-label">
+                <a href="/assets/server_list/?query_key=即将到期"><strong class="num">{{aliyun.data_server}}</strong></a>
+                <span>即将到期</span>
+            </div>
+                <div class="xe-label">
+                <a href="/assets/aliyun_groups/"><strong class="num">{{aliyun.aliyun_group_count}}</strong>
+                <span>服务器分组</span></a>
+            </div>
+    </div>
+</div>
+
+<div class="col-sm-6">
+
+    <div class="xe-widget xe-vertical-counter xe-vertical-counter-white" data-count=".num" data-from="0" data-to="128" data-duration="4">
+        <div class="xe-icon">
+            <i class="fa-cloud"></i>
+            <h2>腾讯云</h2>
+        </div>
+            <div class="xe-label">
+                <a href="/assets/qcloud_list/" ><strong class="num">{{qcloud.server_count}}</strong></a>
+                <span>服务器数量（包括已被释放的）</span>
+            </div>
+            <div class="xe-label">
+                <a href="/assets/qcloud_list/?query_key=即将到期"><strong class="num">{{qcloud.data_server}}</strong></a>
+                <span>即将到期</span>
+            </div>
+                <div class="xe-label">
+                <strong class="num">{{qcloud.qcloud_group_count}}</strong>
+                <span>服务器分组</span>
+            </div>
+    </div>
+</div>
+
+
+{%endblock%}
+
+{% block dir %}'dir_assets'{% endblock%}

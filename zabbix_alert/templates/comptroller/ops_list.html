@@ -1,0 +1,98 @@
+{% extends 'master/base.html' %}
+{% block title %}操作审计{% endblock %}
+{% block master %}<a href="/comptroller/ops_list/">操作审计</a>{% endblock %}
+{% block content %}
+    <div>
+        <table class='table' style="width:30%;">
+            <form action="/comptroller/ops_list/" method="GET">
+            <td>
+                <select id='query_key' name='query_key' style="margin-left:5%;height:30px;">
+                    {% for one in query_item%}
+                    <option value = '{{one}}'>{{one}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="text" name="query_value" value="{{query_value}}" placeholder="请输入人名(非必填)" style="margin-left:5%;height:30px;">
+            </td>
+            <td>
+                <button type="submit" class='btn btn-success' style="margin-left:5%;">搜索</button>
+            </td>
+            </form>
+        </table>
+        
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered table-striped " id="server">
+
+                {% if phont_status%}
+                    <tbody>
+                        <tr>
+                            <th>名称</th>
+                            <th>IP地址</th>
+                        </tr>
+                        <tr>
+                            <td><a href="assets/server_detail/?instanceid={{server.instanceid}}">{{server.instance_name}}</td>
+                            <td>{{server.public_ip}}</td>
+                        </tr>
+                    </tbody>
+                {%else%}
+                        <tbody>
+                            <tr style="color:black;">
+                                <th>操作人</th>
+                                <th>操作类型</th>
+                                <th>IP地址</th>
+                                <th>操作内容</th>
+                                <th>查看备注</th>
+                            </tr>
+                        
+                            {% for opt in page %}
+                                <tr style="color:black;">
+                                    <td>{{opt.user_name}}</td>
+                                    <td>{{opt.opt_type}}</td>
+                                    <td>{{opt.ip}}</td>
+                                    <td>{{opt.opt_content}}</td>
+                                    <td>
+                                        <button class="btn btn-white" data-toggle="popover" data-trigger="click" data-placement="left" data-content="{{opt.memo}}" data-original-title="备注">查看</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    {%endif%}
+                </table>
+            </div>
+        </div>
+            <ul class="pager" style="float: right;">
+
+                {% if page.has_previous %}
+                    <li><a href="/comptroller/ops_list/">首页</a></li>
+                    <li><a href="/comptroller/ops_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+
+                {% if page.has_next %}
+                    <li><a href="/comptroller/ops_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.next_page_number }}">后一页</a></li>
+                    <li><a href="/comptroller/ops_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum"></li>
+                    <li onclick="window.location.href='/comptroller/ops_list/?query_key={{query_key}}&query_value={{query_value}}&page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                    <li><a href="#">第{{page.number}}/{{page.paginator.num_pages}}页   共{{ page.paginator.num_pages}}页</a></li>
+            </ul>
+    </div>
+
+</div>
+
+</div>
+
+<script src="/static/assets/js/server_operate.js"></script>
+
+{% endblock %}
+
+{% block dir %}'dir_comptroller'{% endblock%}

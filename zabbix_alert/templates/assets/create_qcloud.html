@@ -1,0 +1,284 @@
+{% extends 'master/base.html' %}
+{% block title %}新建云服务器{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}
+{% block list %}<a href="/assets/qcloud_list/"> 腾讯云列表 </a>{% endblock%}
+{% block content %}
+<div class="panel panel-default">
+    <div class="panel-body" style="margin:3%;">
+        <form class="form-horizontal" id="create_form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <label  class="col-sm-2 control-label" style="margin-left:1%;">
+                        <h4>可用区域:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <select class="form-control" name="change_region_cvm" id="change_region_cvm" onclick="change_region()">
+                              <option value="200001" id="s1">上海一区</option>
+                              <option value="100002" id="g2">广州二区</option>
+                              <option value="100003" id="g3">广州三区</option>
+                              <option value="800001" id="b1">北京一区</option>
+                              <option value="300001" id="x1">香港一区</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    
+                    <label  class="col-sm-2 control-label" style="margin-left:1%;">
+                        <h4>服务器配置:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <select class="form-control" name="region_s1" id="region_s1" style="display:none">
+                              {%for one in s1%}
+                                    <option value="{{one.key}}" id="s1">{{one.value}}</option>
+                              {%endfor%}
+                            </select>
+                            <select class="form-control" name="region_g2" id="region_g2">
+                              {%for one in g2%}
+                                    <option value="{{one.key}}" id="g2">{{one.value}}</option>
+                              {%endfor%}
+                            </select>
+                            <select class="form-control" name="region_g3" id="region_g3" style="display:none">
+                              {%for one in g3%}
+                                    <option value="{{one.key}}" id="g3">{{one.value}}</option>
+                              {%endfor%}
+                            </select>
+                            <select class="form-control" name="region_b1" id="region_b1" style="display:none">
+                              {%for one in b1%}
+                                    <option value="{{one.key}}" id="b1">{{one.value}}</option>
+                              {%endfor%}
+                            </select>
+                            <select class="form-control" name="region_x1" id="region_x1" style="display:none">
+                              {%for one in x1%}
+                                    <option value="{{one.key}}" id="b1">{{one.value}}</option>
+                              {%endfor%}
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label  class="col-sm-2 control-label" style="margin-left:1px;">
+                        <h4>镜像:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <select class="form-control" id="imageId" name="imageId">
+                                {%for one in images%}
+                                    <option value="{{one.key}}">{{one.value}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label  class="control-label" style="margin-left:5%;">
+                        <h4>宽带付费方式:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <select class="form-control" id="bandwidthType" name="bandwidthType">
+                                <option value="PayByBandwidth">固定宽带付费</option>
+                                <option value="PayByTraffic">按流量付费</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label  class="col-sm-2 control-label" style="margin-left:1px;">
+                        <h4>带宽:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <input type="text" class="form-control" name="bandwidth" id="bandwidth">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <label  class="col-sm-2 control-label" style="margin-left:3%;">
+                        <h4>系统盘大小:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <input type="text" class="form-control" name="rootSize" id="rootSize">
+                        </div>
+                    </div>
+                    <li class="active" style="margin-left:10%;">限制为：20-50G</li>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <label  class="ontrol-label" style="margin-left:3%;">
+                        <h4>数据盘大小:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <input type="text" class="form-control" name="storageSize" id="storageSize">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label  class="control-label" style="margin-left:5%;">
+                        <h4>购买时长(月）:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <input type="text" class="form-control" name="period" id="period">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label  class="control-label" style="margin-left:1%;">
+                        <h4>购买数量:</h4>
+                    </label>
+                    <div class="form-group">
+                        <div class="col-sm-10" style="margin-left:8%;">
+                            <input type="text" class="form-control" name="goodsNum" id="goodsNum">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+          <div class="form-group" style="margin-top:3%">
+            <div class="col-sm-offset-6 col-sm-6">
+              <a  class="btn btn-success col-sm-2" onclick="create_submit()">提交</a>
+            </div>
+          </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+
+function change_region(){
+    var change_reg = $('#change_region_cvm').val();
+    if (change_reg == '100002') {
+        document.getElementById("region_g3").style.display="none";
+        document.getElementById("region_s1").style.display="none";
+        document.getElementById("region_b1").style.display="none";
+        document.getElementById("region_x1").style.display="none";
+        document.getElementById("region_g2").style.display="";
+    } else if(change_reg == '100003'){
+        document.getElementById("region_g2").style.display="none";
+        document.getElementById("region_s1").style.display="none";
+        document.getElementById("region_b1").style.display="none";
+        document.getElementById("region_x1").style.display="none";
+        document.getElementById("region_g3").style.display="";
+    } else if(change_reg == '200001'){
+        document.getElementById("region_g3").style.display="none";
+        document.getElementById("region_g2").style.display="none";
+        document.getElementById("region_b1").style.display="none";
+        document.getElementById("region_x1").style.display="none";
+        document.getElementById('region_s1').style.display="";
+    } else if(change_reg == '800001'){
+        document.getElementById("region_g3").style.display="none";
+        document.getElementById("region_s1").style.display="none";
+        document.getElementById("region_g2").style.display="none";
+        document.getElementById("region_x1").style.display="none";
+        document.getElementById('region_b1').style.display="";
+    }else if(change_reg == '300001'){
+        document.getElementById("region_g3").style.display="none";
+        document.getElementById("region_s1").style.display="none";
+        document.getElementById("region_g2").style.display="none";
+        document.getElementById("region_b1").style.display="none";
+        document.getElementById('region_x1').style.display="";
+    };
+
+}
+
+
+function checkForm(){
+
+    var oPassword1 = $('#passwd1');
+    var oPassword2 = $('#passwd2');
+    if (oPassword1.val() == ''){
+        alert('请填写密码');
+        oPassword1.focus();
+        return false;
+    };
+    if (oPassword2.val() == ''){
+        alert('请确认密码');
+        oPassword2.focus();
+        return false;
+    };
+    if (oPassword2.val() != oPassword1.val()){
+        alert('密码不一致');
+        oPassword1.focus();
+        return false;
+    };
+
+    oBandwidth = $('#bandwidth');
+    if(oBandwidth.val() == ''){
+        alert('请输入带宽');
+        oBandwidth.focus();
+        return false;
+    };
+
+    oSystemDisk = $('#rootSize');
+    if(oSystemDisk.val() == ''){
+        alert('请输入系统盘大小');
+        oSystemDisk.focus();
+        return false;
+    };
+
+    oDataDisk = $('#storageSize');
+    if(oDataDisk.val() == ''){
+        alert('请输入数据盘大小');
+        oDataDisk.focus();
+        return false;
+    };
+
+    oMonths = $('#period');
+    if(oMonths.val() == ''){
+        alert('请输入购买月份');
+        oMonths.focus();
+        return false;
+    };
+
+    oNum = $('#goodsNum');
+    if(oNum.val() == ''){
+        alert('请输入购买服务器数量');
+        oNum.focus();
+        return false;
+
+    };
+    return true;
+}
+
+function create_submit(){
+    //alert($('#create_form').serialize());
+    var data = $('#create_form').serialize();
+    if(checkForm()){
+        var url = '/assets/create_qcloud/'
+        $.post(url, data,function(result){
+            var result_status = result.indexOf('密码');
+            if (result_status != '-1') {
+                var passwd = $('#passwd1');
+                passwd.focus();
+            }else{
+                alert(result);
+                window.location="/assets/qcloud_list/";
+            };
+        });        
+    };
+
+}
+</script>
+
+{% endblock %}
+
+{% block dir %}
+'dir_assets'
+{% endblock%}

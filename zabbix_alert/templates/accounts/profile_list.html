@@ -1,0 +1,115 @@
+ {% extends 'master/base.html' %}
+{% block title %}{{query_department}}用户列表{% endblock %}
+{% block master %}<a href="/accounts/department_list/">部门列表</a>{% endblock %}
+{% block list %}用户列表{% endblock %}
+{% block content %}
+    <div>
+        <table class='table' style="width:30%;">
+            <form action="/accounts/profile_list/" method="GET">
+            <td>
+                <select id='query_key' name='query_key' style="margin-left:5%;height:30px;" onchange="to_query(this.value)">
+                    {% for one in query_item%}
+                    <option value = '{{one}}'>{{one}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="text" name="query_value" value="{{query_value}}" placeholder="请输入人名(模糊查询)" style="margin-left:5%;height:30px;">
+            </td>
+            <td>
+                <button type="submit" class='btn btn-success' style="margin-left:5%;">搜索</button>
+            </td>
+            </form>
+            {% if user.profile.privilege != 1 %}
+            <td>
+                <a href="/accounts/create_profile/?query_department={{query_department}}" class='btn btn-turquoise' style="margin-left:5%;">创建用户</a>
+            </td>
+            {%endif%}
+        </table>
+        
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered table-striped " id="server">
+
+                {% if phone_status%}
+                    <tbody>
+                        <tr>
+                            <th>名称</th>
+                            <th>部门</th>
+                        </tr>
+                        {% for one  in page%}
+                            <tr>
+                                <td><a href="/accounts/profile_detail/?id={{one.id}}">{{one.name}}</td>
+                                <td>{{one.department}}</td>
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                {%else%}
+                        <tbody>
+                            <tr style="color:black;">
+                                <th>名称</th>
+                                <th>部门</th>
+                                <th>角色</th>
+                                <th>权限</th>
+                                <th>邮箱</th>
+                                <th>手机号</th>
+                                <th>操作</th>
+                            </tr>
+                        
+                            {% for one in page %}
+                                <tr style="color:black;">
+                                    <td>{{one.name}}</td>
+                                    <td>{{one.department}}</td>
+                                    <td>{{one.role}}</td>
+                                    <td>{{one.get_privilege_display}}</td>
+                                    <td>{{one.mail}}</td>
+                                    <td>{{one.cell}}</td>
+                                    <td>
+                                        <a href="/accounts/update_profile/?profile_id={{one.id}}&query_department={{query_department}}"> 修改</a>
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    {%endif%}
+                </table>
+            </div>
+        </div>
+            <ul class="pager" style="float: right;">
+
+                {% if page.has_previous %}
+                    <li><a href="/accounts/profile_list/">首页</a></li>
+                    <li><a href="/accounts/profile_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+
+                {% if page.has_next %}
+                    <li><a href="/accounts/profile_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.next_page_number }}">后一页</a></li>
+                    <li><a href="/accounts/profile_list/?query_key={{query_key}}&query_value={{query_value}}&page={{ page.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum"></li>
+                    <li onclick="window.location.href='/accounts/profile_list/?query_key={{query_key}}&query_value={{query_value}}&page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                    <li><a href="#">第{{page.number}}/{{page.paginator.num_pages}}页   共{{ page.paginator.num_pages}}页</a></li>
+            </ul>
+    </div>
+
+</div>
+
+</div>
+
+<script type="text/javascript">
+function to_query(value) {
+    window.location="/accounts/profile_list/?query_key=" + value;
+}
+</script>
+
+<script src="/static/assets/js/server_operate.js"></script>
+{% endblock %}
+{% block dir %}'dir_profile'{% endblock%}

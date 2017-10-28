@@ -1,0 +1,53 @@
+{% extends 'master/base.html' %}
+{% block title %}{{rds_info.server_type}}数据库详情{% endblock %}
+{% block master %}<a href="/assets/rds_type/">数据库列表</a>{% endblock %}
+{% block list%}数据库详情{% endblock %}
+{% block content %}
+<style type="text/css">
+.td{
+    width:40%;
+}
+</style>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <strong>基本信息</strong>
+                                <table class="table table table-bordered table-striped">
+                                    
+                                    <tr><td class="td">ID</td><td>{{rds_info.instanceid}}</td></tr>
+                                    <tr><td>名称</td><td>{{rds_info.instance_name}}</td></tr>
+                                    <tr><td>版本</td><td>{{rds_info.engine_version}}</td></tr>
+                                    <tr><td>可用区域</td><td>{{rds_info.zone_id}}</td></tr>
+                                    <tr><td>状态</td><td>{{rds_info.status}}</td></tr>
+                                    <tr><td>端口号</td><td>{{rds_info.vport}}</td></tr>
+                                    <tr><td>创建时间</td><td>{{rds_info.create_time}}</td></tr>
+                                    <tr><td>到期时间</td><td>{{rds_info.deadline_time}}</td></tr>
+                                </table>
+                                    
+                            </div>
+                        </div>
+
+                        <div class="row">
+                                <div class="col-sm-12" >
+                                <strong>配置信息</strong>
+                                <table class="table table table-bordered table-striped">
+                                    
+                                    <tr><td class="td">网络类型</td><td>{{rds_info.net_type}}</td></tr>
+                                    <tr><td>内存</td><td>{{rds_info.mem}}MB</td></tr>
+                                    <tr><td>CPU</td><td>{{rds_info.cpu}}核</td></tr>
+                                    <tr><td>存储容量</td><td>{{rds_info.storage_size}}G</td></tr>
+                                    <tr><td>最大连接数</td><td>{{rds_info.max_query}}次/秒</td></tr>
+                                    <tr><td>连接模式</td><td>{{rds_info.connect_mode}}</td></tr>
+                                    <tr><td>内网IP</td><td>{{rds_info.instance_vpcid}}</td></tr>
+                                </table>
+                                    
+                                </div>
+                        </div>
+                        <div class="vspacer v3"></div>
+                    </div>
+                </div>
+<script src="/static/assets/js/server_operate.js"></script>
+{% endblock %}
+{% block dir %}'dir_assets'{% endblock%}

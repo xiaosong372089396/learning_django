@@ -1,0 +1,94 @@
+{% extends 'master/base.html' %}
+{% block title %}当天告警&nbsp;&nbsp;&nbsp;&nbsp;
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/alerts/css/alert_color.css" type="text/css" />
+    <link rel="stylesheet" href="/static/alerts/css/Font-Awesome-3.2.1/css/font-awesome.min.css" />
+    {% endblock %}
+{% block master %}<a href="#">当天告警</a>{% endblock %}
+
+{% block content %}
+   <div>
+        <div class="alert alert-success col-md-12" role="alert">查看当天告警任务统计</div> <!-- alerts_color1 -->
+
+    </div>
+
+    <div>
+        <div class="alert alert-info col-md-1" role="alert">正确类型：{{ OK }}</div>   <!-- alerts_color2 -->
+    </div>
+    <!-- -->
+    <div>
+        <div class="alert alert-danger col-md-1 col-md-offset-1" role="alert">灾难类型：{{ PROBLEM }}</div> <!--  alerts_color3 -->
+    </div>
+    <!-- -->
+    <div>
+        <div class="alert alert-warning col-md-1 col-md-offset-1" role="alert">警告类型：0</div>  <!-- alerts_color4 -->
+    </div>
+    <div>
+        <div class="alert alert-info col-md-1 col-md-offset-1" role="alert">列队数目：{{ num }}</div> <!-- alerts_color5 -->
+    </div>
+
+<div class="table table-responsive ">
+    <table class="table table-hover table-striped"> <!-- alerts_color8 -->
+        <thead>
+        <tr>
+            <th>id编号</th>
+            <th>主机名称</th>
+            <th>告警等级</th>
+            <th>告警信息</th>
+            <th>时间</th>
+            <th>状态</th>
+         </tr>
+        </thead>
+    <tbody>
+{% for attriute in contacts %}
+        <tr>
+            <td>{{ attriute.id }}</td>
+            <td>{{ attriute.hostname }}</td>
+                {% if attriute.level == 'Disaster'%}
+            <td><span class="label label-danger">灾难</span></td>
+                {% else %}
+            <td><span class="label label-warning">警告</span></td>
+                {% endif %}
+            <td>{{ attriute.message }}</td>
+            <td>{{ attriute.times }}</td>
+        {% if  attriute.status == ' PROBLEM' %}
+            <td><span class="label label-danger">故障</span></td>
+        {% elif attriute.status == ' OK' %}
+            <td><span class="label label-success">恢复</span></td>
+        {% else %}
+            <td><span class="label label-warning">警告</span></td>
+        {% endif %}
+        </tr>
+{% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- 开始  -->
+    <ul class="pager" style="float: left">   <!-- alerts_color9 -->
+                  <!-- 是否还有 上一页 -->
+                {% if  contacts.has_previous %}
+                    <li><a href="#">首页</a></li>
+                                            <!-- 返回上一页的页码，如果没有就申明 InvalidPage异常 -->
+                    <li><a href="?page={{ contacts.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+                   <!-- 是否还有下一页 -->
+                {% if  contacts.has_next %}
+                                            <!-- 下一页的页码 -->
+                    <li><a href="?page={{ contacts.next_page_number }}">后一页</a></li>
+                                            <!-- 总共分页数 -->
+                    <li><a href="?page={{ contacts.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum" /></li>
+                    <li onclick="window.location.href='?page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                                         <!-- 该页的页码 -->       <!-- 总共分页数 -->                           <!-- 总共分页数 -->
+                    <li><a href="#">第{{ contacts.number }}/{{contacts.paginator.num_pages}}页   共{{ contacts.paginator.num_pages}}页</a></li>
+</ul>
+<!-- end -->
+{% endblock %}
+

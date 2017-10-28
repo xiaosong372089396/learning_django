@@ -1,0 +1,182 @@
+{% extends 'master/base.html' %}
+{% block title %}告警用户&nbsp;&nbsp;&nbsp;&nbsp;
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/alerts/css/alert_color.css" type="text/css" />
+    <link rel="stylesheet" href="/static/alerts/css/Font-Awesome-3.2.1/css/font-awesome.min.css" />
+    {% endblock %}
+
+{% block   content %}
+    <button  type="button" class="btn btn-info btn-xs"  data-toggle="modal" data-target="#create_user">添加告警用户</button>
+
+<div class="table table-responsive">
+    <table class="table table-hover table-striped"> <!-- alerts_color9  -->
+        <thead>
+        <tr>
+            <th>ID编号：</th>
+            <th>用户名：</th>
+            <th>手机号：</th>
+            <th>操作</th>
+         </tr>
+        </thead>
+    <tbody>
+    {% for i in contacts %}
+        <tr>
+            <td>{{ i.id }}</td>
+            <td>{{ i.username }}</td>
+            <td>{{ i.mobile }}</td>
+            <td>
+                <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#dele_user" data-id="{{ i.id }}" data-ip="{{ i.username }}">删除</button>
+            </td>
+        </tr>
+    {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 开始  -->
+<ul class="pager" style="float: left"> <!-- alerts_color9 -->
+                {% if  contacts.has_previous %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="?page={{ contacts.previous_page_number }}">前一页</a></li>
+                {% else %}
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">前一页</a></li>
+                {% endif %}
+                {% if  contacts.has_next %}
+                    <li><a href="?page={{ contacts.next_page_number }}">后一页</a></li>
+                    <li><a href="?page={{ contacts.paginator.num_pages }}">末页</a></li>
+                {% else %}
+                    <li><a href="#">后一页</a></li>
+                    <li><a href="#">末页</a></li>
+                {% endif %}
+                    <li><input style="width:50px;margin-bottom:0px;" type="text" id="pageNum" name="pageNum"></li>
+                    <li onclick="window.location.href='?page='+document.getElementById('pageNum').value;"><a href="#">确定</a></li>
+                    <li><a href="#">第{{ contacts.number }}/{{contacts.paginator.num_pages}}页   共{{ contacts.paginator.num_pages}}页</a></li>
+</ul>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="create_user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+                <h4 class="modal-title" id="myModalLabel">用户名：请输入中文</h4>
+       </div>
+            <form>
+                <div class="form-group">
+                      <label for="username" class="control-label">用户名：</label>
+                            <input type="text" class="form-control" id="usernames" name="username"  required autofocus placeholder="用户名" />
+                </div>
+                <div class="form-group">
+                      <label for="mobile" class="control-label">手机号码：</label>
+                            <input type="text" class="form-control" id="mobiles" name="mobile"  required autofocus  placeholder="手机号" />
+                </div>
+            </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info btn-xs" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary btn-xs" id="btn_enter">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- end -->
+<div class="modal fade" id="dele_user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+                <h4 class="modal-title" id="myModalLabel">删除：指定告警用户</h4>
+       </div>
+            <form>
+                <div class="form-group">
+                      <label for="username" class="control-label">用户ID：</label>
+                            <input type="text" class="form-control" id="apiusers" name="{{ formss.id.html_name }}" value="{{ formss.id.value }}" required autofocus disabled="disabled" />
+                </div>
+            </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info btn-xs" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary btn-xs" id="enters">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- end -->
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('#create_user').on('show.bs.modal',  function (event) {
+         var button = jQuery(event.relatedTarget)
+         var recipient = button.data('whatever')
+         var modal = jQuery(this)
+              modal.find('modal-title').text('添加用户' + recipient)
+              modal.find('modal-body input').val(recipient)
+              modal.find('#usernames').val(button.data('username'));
+              modal.find('#mobiles').val(button.data('mobile'))
+        });
+             jQuery('#btn_enter').on('click', function() {
+                var username = jQuery('#usernames').val(),
+                     mobile  =  jQuery('#mobiles').val()
+                    jQuery.post('/alertsapi/contact_alert/' , {
+                        'username' : username,
+                        'mobile'   : mobile,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },  function(data) {
+                        console.log(data);
+                        if(data['ok']) {
+                            jQuery('#create_user').modal('hide');
+                            window.location.reload();
+                       }else {
+                            jQuery('#error').text(data['result']);
+                            jQuery('#error').show();
+                       }
+                    }, 'json');
+             });
+       });
+</script>
+
+<script type="text/javascript">
+    function check() {
+        var  name  =  document.getElementByld("usernames").value;
+        if  (name == "") {
+            alert("名字不能为空");
+            return false
+        }
+        var  mobile = document.getElementByld("mobiles").value;
+        if  (mobile == "") {
+            alert("手机号不能为空");
+            return  false
+        }
+    }
+</script>
+
+<script type="text/javascript">
+   jQuery(document).ready(function() {
+    jQuery('#dele_user').on('show.bs.modal',  function (event) {
+         var button = jQuery(event.relatedTarget)
+         var recipient = button.data('whatever')
+         var modal = jQuery(this)
+              modal.find('modal-title').text('删除：指定用户' + recipient)
+              modal.find('modal-body input').val(recipient)
+              modal.find('#apiusers').val(button.data('id'))
+        });
+             jQuery('#enters').on('click', function() {
+                var id = jQuery('#apiusers').val()
+                    jQuery.post('/alertsapi/api_deleuser/' , {
+                        'id' : id,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },  function(data) {
+                        console.log(data);
+                        if(data['ok']) {
+                            jQuery('#dele_user').modal('hide');
+                            window.location.reload();
+                       }else {
+                            jQuery('#error').text(data['result']);
+                            jQuery('#error').show();
+                       }
+                    }, 'json');
+             });
+       });
+</script>
+{% endblock %}

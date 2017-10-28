@@ -1,0 +1,194 @@
+{% extends 'master/base.html' %}
+{% block title %}资产总表详情{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}
+{% block list %}<a href="/assets/server_list/"> 阿里云列表</a> {% endblock%}
+{% block content %}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <ol class="breadcrumb">
+                    <strong>基本信息:</strong>
+                </ol>
+                <table class="table table-bordered table-hover table-striped">
+                    <tbody>
+                      <tr>
+                            <th scope="row" style="width:40%;">ID</th>
+                            <td>{{server.instanceid}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">所在可用区域</th>
+                            <td>{{ server.zone_id }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">名称</th>
+                            <td>{{ server.instance_name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">状态</th>
+                            <td>{{ server.status }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">描述</th>
+                            <td>{{ server.description }}</td>
+                        </tr>
+                        <tr>
+                            <th scope='row'>实例规格</th>
+                            <td>{{ server.instance_type }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">实例规格族</th>
+                            <td>{{ server.instance_family }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">分组</th>
+                            <td>
+                            {{ server.server_group }} 
+                            {% if user.profile.privilege > 1 %}
+                            <button class="btn btn-primary" onclick="jQuery('#modal_change_modal').modal('show',{backdrop: 'static'});" style="margin-left:5%;">修改</button>
+                            {%endif%}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <strong>配置信息:</strong>
+                <table class="table table-bordered table-hover table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" style="width:40%;">Cpu</th>
+                            <td>{{server.cpu}}核</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">内存</th>
+                            <td>{{server.memory}}MB</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">操作系统</th>
+                            <td>{{ server.image_id }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">公网IP</th>
+                            <td>{{ server.public_ip}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">内网IP</th>
+                            <td>{{ server.inner_ip }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">宽带计费方式</th>
+                            <td>{{ server.internet_charge_type}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">当前使用带宽</th>
+                            <td>{{ server.eip_bandwidth}}M</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <strong>付费信息:</strong>
+                <table class="table table-bordered table-hover table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" style="width:40%;">付费方式</th>
+                            <td>{{ server.instance_charge_type }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">创建时间</th>
+                            <td>{{ server.create_time }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">到期时间</th>
+                            <td>{{ server.expired_time }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <meta name="apple-mobile-web-app-capable" content="yes">  
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">  
+    <link rel="stylesheet" href="/static/master/css/common.css"/><!-- 基本样式 -->
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+
+    <div id="HBox">
+      <form action="" method="post" onsubmit="return false;">
+        <input type="hidden" name="instanceid" id="instanceid" value="{{server.instanceid}}">
+        <ul class="list">
+          <li>
+            <strong>组 名  <font color="#ff0000">*</font></strong>
+            <div class="fl">
+                <input type="hidden" name="server_id" value="">
+                <select name="name" id="name" value="" class="ipt nickname">
+                    {%for one in groups%}
+                    <option value={{one.name}}>{{one.name}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+          </li>
+          <li><input type="submit" value="确认提交" class="submitBtn" /></li>
+        </ul>
+      </form>
+    </div><!-- HBox end --> 
+
+<script>
+
+function modal_change_modal(){
+    var url = '/assets/change_group/';
+    var name= $('#group_name').val();
+    var server_id = $('#instanceid').val();
+    $.get(url, {'server_id': server_id, 'server_name': name}, function(result){
+        alert(result);
+        location.reload();
+    });
+
+};
+
+</script>
+
+{% endblock %}
+
+{%block modals%}
+    <div class="modal fade" id="modal_change_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">新建</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="instanceid" id="instanceid" value="{{server.instanceid}}">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">组名</label>
+                                <select class="form-control" id="group_name" name="group_name">
+                                    {%for one in groups%}
+                                        <option value="{{one.name}}">{{one.name}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button onclick="modal_change_modal()" class="btn btn-info">创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}
+{% block dir %}'dir_assets'{% endblock%}

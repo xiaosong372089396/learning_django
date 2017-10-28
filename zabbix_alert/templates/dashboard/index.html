@@ -1,0 +1,173 @@
+{% extends 'master/base.html' %}
+{% block title %}
+    仪表盘
+{% endblock %}
+{% block info %}
+{% endblock %}
+{% block path %}
+<ol class="breadcrumb bc-1">
+<li>
+<a href="#"><i class="fa-home"></i>Home</a>
+</li>
+</ol>
+{% endblock %}
+{% block content %}
+{#<script src="/static/master/js/jquery.min.js"></script>#}
+ <script src="/static/plugins/echarts/echarts.min.js"></script>
+    <style>
+        progress {
+            margin-top: 0.3%;
+            margin-left: 10%;
+            display: inline-block;
+            width: 200px;
+            height: 15px;
+            border: grey;
+            background-color:#f8f8f8;
+            color: #EFd800 /*IE10*/
+        }
+
+        .aside1{
+
+        }
+    </style>
+    <div class="row">
+				<div class="col-sm-3">
+					<div class="xe-widget xe-counter" data-count=".num" data-from="0" data-to="99.9" data-suffix="%" data-duration="2">
+						<div class="xe-icon">
+							<i class="fa-clock-o"></i>
+						</div>
+						<div class="xe-label">
+							<strong class="num">10小时</strong>
+							<span>系统运行时间</span>
+						</div>
+					</div>
+					<div class="xe-widget xe-counter xe-counter-purple" data-count=".num" data-from="1" data-to="117" data-suffix="k" data-duration="3" data-easing="false">
+						<div class="xe-icon">
+							<i class="fa-user"></i>
+						</div>
+						<div class="xe-label">
+							<strong class="num">{{ user_count }}</strong>
+							<span>用户在线</span>
+						</div>
+					</div>
+					<div class="xe-widget xe-counter xe-counter-info" data-count=".num" data-from="1000" data-to="2470" data-duration="4" data-easing="true">
+						<div class="xe-icon">
+							<i class="fa-desktop"></i>
+						</div>
+						<div class="xe-label">
+							<strong class="num">{{ serice_count }}</strong>
+							<span>主机数</span>
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-6" style="height: 298px">
+
+					<div class="chart-item-bg">
+						<div class="chart-label">
+						</div>
+                        <!--用来转化成图-->
+						<div  id="flow-echart" style="height: 298px;"></div>
+					</div>
+				</div>
+				<div class="col-sm-3">
+                    <div class="xe-widget xe-counter xe-counter-success" data-count=".num" data-from="0" data-to="99.9" data-suffix="%" data-duration="2">
+						<div class="xe-icon">
+							<i class="fa-star"></i>
+						</div>
+						<div class="xe-label">
+							<strong class="num">{{ gamepro_count }}</strong>
+							<span>游戏项目数</span>
+						</div>
+					</div>
+{#					<div class="aside1" style="width: 100%;height: 90px;margin-left: 0;margin-top: 0;background-color: #ffffff">#}
+{#                        <label style="margin-left: 10%;margin-top: 8%;font-size: 16px;">游戏项目数{{ cpu_0ccupy }}</label>#}
+{#                        <div style="margin-left: 10%">15</div>#}
+{#                    </div>#}
+
+                    <!--进度条内存-->
+                        <div class="aside1" style="width: 100%;height: 90px;margin-left: 0;margin-top: 14px;background-color: #ffffff">
+
+                            <label style="margin-top: 8%;margin-left: 10%;width: 100px;height: 23px;font-size: 16px">内存使用率</label>
+                            <div class="progress progress-striped">
+                                <div  id="memory_state1" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 20%;">
+                                    <span class="sr-only" id="cpu_state1">15% 占用（成功</span>
+                                </div>
+                                <div id="memory_state2" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 30%;">
+                                    <span class="sr-only">35% 占用（信息）</span>
+                                </div>
+                                <div id="memory_state3" class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemax="100" aria-valuemin="0" style="width: 20%">
+                                    <span class="sr-only">20% 占用（警告）</span>
+                                </div>
+                                <div id="memory_state4" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemax="100" aria-valuemin="0" style="width: 30%">
+                                    <span class="sr-only">30% 占用（危险）</span>
+                                </div>
+                            </div>
+                        </div>
+                    <!--进度条数据库负载-->
+                        <div class="aside1" style="width: 100%;height: 90px;margin-left: 0;margin-top: 14px;background-color: #ffffff">
+                            <label style="margin-left:10%;margin-top: 8%;font-size: 16px">数据库负载</label>
+                            <div class="progress progress-striped">
+                                <div  class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 20%;">
+                                    <span class="sr-only">15% 占用（成功</span>
+                                </div>
+                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 30%;">
+                                    <span class="sr-only">35% 占用（信息）</span>
+                                </div>
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemax="100" aria-valuemin="0" style="width: 20%">
+                                    <span class="sr-only">20% 占用（警告）</span>
+                                </div>
+                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemax="100" aria-valuemin="0" style="width: 30%">
+                                    <span class="sr-only">20% 占用（危险）</span>
+                                </div>
+                            </div>
+                        </div>
+				</div>
+			</div>
+
+{#<link src="/static/master/fonts/fontawesome/css/font-awesome.css"/>#}
+<div class="row">
+    <div class="col-sm-4" style="height: 400px;background-color: white;float: left">
+        <div id="chart-cpu" style="margin-top: 0px;margin-left: 0px;width: 100%;height: 100%"></div>
+    </div>
+
+    <div class="" style="width:33%;height: 400px;background-color: white;margin-left: 34.2%;float: left;margin-top: -400px;background-color:#F3F7FB ">
+        <div id="title-div" style="margin-left: 0;margin-top: 0;width: 100%;height: 10%;background-color: white">
+{#            <label style="margin-top: 2%;margin-left: 5%;font-size: 17px;float: left"><strong>用户操作记录</strong></label>#}
+            <button style="margin-left: 70%;margin-top: 10px;border: none;border-radius: 5px">{{opt_count}} Messages</button>
+        </div>
+        <div id="blank-div" style="margin-top: 3px;width: 100%;height: 15%;align-content: center">
+            <i class="fa-inbox" style="margin-left: 5%;font-size: 20px" ></i>
+            <label style="margin-left: 1%;margin-top: 10px;color: grey">最近用户操作记录</label>
+        </div>
+        {% for foo in  opts %}
+            <div id="cell-div" style="margin-top: 3px;width: 100%;height: 10%;background-color: white;">
+                    <div style="text-align:center;">{{foo.user_name}} {{foo.opt_content}}</div>
+            </div>
+        {% endfor %}
+        <div id="button-div" style="margin-left: 5%;margin-top: 10px;width: 90%;height:8% ;background-color: #1AB395;border-radius: 5px">
+            <i class="fa fa-arrow-down" aria-hidden="true" style="color: white;margin-left: 32%;"></i>
+            <a href="/comptroller/ops_list/"><label style="text-align:center;margin-left: 0;margin-top: 1%;width: 20%;font-size: 16px;color: white"><strong>更多</strong></label></a>
+        </div>
+    </div>
+    <div class="" style="width:33%;height: 400px;margin-left: 20px;margin-left: 68%;background-color:#F3F7FB">
+        <div id="title-div" style="margin-left: 0;margin-top: 0;width: 100%;height: 10%;background-color: white">
+
+            <button style="margin-left: 70%;margin-top: 10px;border: none;border-radius: 5px">10 Messages</button>
+        </div>
+        <div id="blank-div" style="margin-top: 3px;width: 100%;height: 15%;align-content: center">
+            <i class="fa-inbox" style="margin-left: 5%;font-size: 20px" ></i>
+            <label style="margin-left: 1%;margin-top: 10px;font-size: 20px;color: grey">游戏项目更新记录</label>
+        </div>
+        {% for foo in  '1234' %}
+            <div id="cell-div" style="margin-top: 3px;width: 100%;height: 14%;background-color: white">
+                <div></div>
+            </div>
+        {% endfor %}
+        <div id="button-div" style="margin-left: 5%;margin-top: 10px;width: 90%;height:8% ;background-color: #1AB395;border-radius: 5px">
+            <i class="fa fa-arrow-down" aria-hidden="true" style="color: white;margin-left: 32%;"></i>
+            <label style="text-align:center;margin-left: 0;margin-top: 1%;width: 20%;font-size: 16px;color: white"><strong>更多</strong></label>
+        </div>
+    </div>
+</div>
+ {% endblock %}

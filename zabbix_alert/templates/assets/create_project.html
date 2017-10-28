@@ -1,0 +1,103 @@
+{% extends 'master/base.html' %}
+{% block title %}
+创建
+{%if instance_type == 'qcloud'%}
+腾讯云
+{%else%}
+阿里云
+{%endif%}  
+项目组
+{% endblock %}
+{% block master %}<a href="/assets/server_type/">服务器类型</a>{% endblock %}
+{% block list %} 阿里云列表 {% endblock%}
+{% block content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered table-hover table-striped " id="server" style="margin-top: 3px;">
+                    
+                        <form id="server_nums">
+                        <input type="hidden" name="instance_type" id="instance_type" value="{{instance_type}}">
+                        <input type="hidden" name="name" id="name" value="{{name}}">
+                        {%csrf_token%}
+                            <thead>
+                                <tr>
+                                    {%if instance_type == "aliyun"%}
+                                        <th>名称</th>
+                                    {%endif%}
+                                    <th>所在可用区</th>
+                                    <th>实例规格</th>
+                                    <th>镜像</th>
+                                    <th>带宽</th>
+                                    <th>磁盘</th>
+                                    <th>数量(名称自增)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for server in templates %}
+                                    <tr>
+                                        {% if instance_type == "aliyun"%}
+                                            <td>{{name}}{{server.name}}</td>
+                                        {%endif%}
+                                        <td>{{server.zone_id}}</td>
+                                        <td>{{server.cpu}}核{{server.mem}}G</td>
+                                        <td>{{server.image}}</td>
+                                        <td>带宽:{{server.bandwidth}}MB<br>付费方式：{{server.bandwidth_paytype}}</td>
+                                        <td>{{server.root_disk}}G系统盘</td>
+                                        <td><input type="text" style="width: 80px;text-align:center; vertical-align:middle;" class="form-control" name="{{server.name}}" value="1"/></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </form>
+                </table>
+            </div>
+        </div>
+
+            <div class="form-group" style="margin-top:3%">
+                <div class="col-sm-offset-6 col-sm-5">
+                    <a  class="btn btn-success col-sm-2" onclick="create_project('{{name}}')" data-target="#myModal">创建</a>
+                </div>
+            </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+
+    function create_project(name){
+        var url = "/assets/create_project/";
+        var data = $('#server_nums').serialize();
+        $('#select').modal("show");
+        $.post(url, data, function(result){
+            var result_status = result.indexOf("失败");
+            $('#select').modal('hide');
+            if (result_status == "-1") {
+                alert(result);
+                window.location="/assets/server_list/";
+            } else {
+                alert(result);
+            };
+
+
+        });
+    }
+</script>
+
+
+<script src="/static/assets/js/server_operate.js"></script>
+
+{% endblock %}
+
+{% block modals%}
+    <div class="modal fade" id="select" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" align="middle">
+                <h1 class="modal-title">Loading</h1>
+                </div>
+            </div>  
+        </div>
+    </div>
+{%endblock%}
+
+{% block dir %}'dir_assets'{% endblock%}
