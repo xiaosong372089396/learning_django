@@ -1,0 +1,34 @@
+{% extends "dashboard/index.html" %}
+{% block title %} 欢迎！访问陕西麻将列表 {% endblock %}
+{% block titles %}陕西麻将列表{% endblock %}
+
+
+{% block shanxi %}
+{% for i in host %}
+              <td><!-- <input type="checkbox" /> --></td>
+              <td>{{ forloop.counter }}</td>
+              <td class="am-text-center">{{ i.hostid }}</td>
+              <td><a href="#">{{ i.name }}</a></td>
+{% for id in i.interfaces %}
+               <td>{{ id.ip }}</td>
+
+{% endfor %}
+        {% if i.status == '0' %}
+              <td class="am-hide-sm-only">状态正常</td>
+        {% else %}
+              <td class="am-hide-sm-only">状态异常</td>
+        {% endif %}
+              <td><div class="am-btn-toolbar">
+                  <div class="am-btn-group am-btn-group-xs">
+                  <a class="am-btn am-btn-default am-btn-xs am-text-success am-round am-icon-file" data-am-modal="{target: '#my-popups'}" title="置顶（前台显示热门评论）"></a>
+                <!--    <button class="am-btn am-btn-default am-btn-xs am-text-secondary am-round" data-am-modal="{target: '#my-popups'}" title="添加（随机虚拟用户ID ）"><span class="am-icon-pencil-square-o" ></span></button> -->
+                    <!-- 用按钮的时候 弹层 后缀需要加 问好 ？#的 时候才有效 真恶心 .html?# -->
+                <!--    <button class="am-btn am-btn-default am-btn-xs am-text-danger am-round"  title="删除"><span class="am-icon-trash-o"></span></button> -->
+                  </div>
+                </div></td>
+            </tr>
+<!--  body -->
+<!-- end -->
+
+    {% endfor %}
+{% endblock %}

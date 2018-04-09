@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}SQL上线系统{% endblock %}
+
+{% block content %}
+
+<div class="breadcrumbs" id="breadcrumbs">        
+
+    <ul class="breadcrumb">
+        <li>
+        <i class="icon-home home-icon"></i>
+        <a href="#">Home</a>
+        </li>
+
+        <li>
+        <a href="#">运维工具</a>
+        </li>
+
+        <li>
+        <a href="#">SQL上线审核系统</a>
+        </li>
+
+        <li class="active">SQL上线审核</li>
+    </ul><!-- .breadcrumb -->
+
+</div>
+
+<div class="page-content">
+
+<div class="row">
+    <div class="col-md-12">
+	<div class="panel panel-primary">
+		<div class="panel-heading">请输入需要上线的SQL语句</div>
+		<div class="panel-body">
+			<div class="col-sm-7">
+				<textarea id="sqltext" style="margin-bottom:20px" placeholder="SQL语句" class="col-xs-10 col-sm-12" rows="12"></textarea>
+				<input id="sqlnote" type="text" class="form-control" placeholder="备注" />
+			</div>
+			<div class="col-sm-5">
+				<div>
+                    <div class="col-sm-2"> 
+					    <span style="font-size:16px; color:#4682B4; font-weight:bold "> 环境 </span>
+                    </div>
+                    <div class="col-sm-7">
+					    <label style="margin-right:20%">
+						    <input value="2" name="form-field-radio" type="radio" class="ace" />
+						    <span class="lbl"> 测试</span>
+					    </label>
+					    <label>
+						    <input value="1" name="form-field-radio" type="radio" class="ace" />
+					    	<span class="lbl"> 生产</span>
+				    	</label>
+                    </div>
+				</div>
+	            </br>
+	            </br>
+				<div>
+                    <div class="col-sm-2"> <span style="font-size:16px; color:#4682B4; font-weight:bold" >数据库</span> </div>
+					<div class="col-sm-7">
+						<select id='targetdb' class="form-control" >
+						</select>
+					</div>
+				</div>
+                </br>
+                </br>
+                </br>
+				<div>
+                    <div class="col-sm-2"> <span style="font-size:16px; color:#4682B4; font-weight:bold" >执行人 </span></div>
+                    <div class="col-sm-7">
+					    <select id='treater' class="form-control">
+					    </select>
+                    </div>
+				</div>
+			</div>
+		</div>
+
+    <div class="clearfix form-actions">
+      <div class="col-md-offset-0 col-md-12" style="margin-left:15%">
+        <button id='sqlinputbtn' style="margin-top:20px" class="btn btn-info" type="submit">
+            <i class="icon-ok bigger-110"></i>
+            提交
+        </button>
+        <button style="margin-top:20px; margin-left:15%" class="btn reset">
+            <i class="icon-undo bigger-110"></i>
+            清空
+        </button>
+      </div>
+    </div>
+
+<!--  </form> -->
+</br></br>
+
+	        </div>
+	    </div>
+	</div>
+</div>
+
+<!-- SQL 检测结果，错误模态框 -->
+ <div class="modal fade" id='deleteModalError'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+    	<div class="modal-header" style="background:#00BFFF; color:white">
+			<i class="fa fa-info-circle"></i>
+            <span style="font-weight:bold">Sql检测</span>
+	  		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+      <div id="deleteModalbodyError" class="modal-body" style="text-align:center">
+        <p>确认删除选择的数据吗？</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn cancelbtn" data-dismiss="modal">取消</button>
+        <button type="button" id='savedeletebtn' class="btn btn-primary surebtn">确定</button>
+      </div>
+    </div>       <!-- /.modal-content -->
+  </div>         <!-- /.modal-dialog -->
+</div>          <!-- /.modal -->
+
+
+<script>
+$('.reset').click(function(){
+	$('#sqltext').val('')
+});
+
+$('#sqlinputbtn').click(function(){
+    var env = $('input[name="form-field-radio"]').filter(':checked').val()
+	var dbname = $('#targetdb').val();
+	var sqlcontent = $.trim($('#sqltext').val());
+	var note = $.trim($('#sqlnote').val());
+	var treater = $.trim($('#treater').val());
+    console.log(dbname);
+        $.ajax({
+               type: "post",
+               url: "/sqlmng/inception_commit/",
+               data: {sqlcontent:sqlcontent, dbname:dbname, env:env, note:note, treater:treater},
+               dataType: "json",
+               success: function(result) {
+                   console.log(result);
+                   /*   */
+                   if (result.status == -2) {
+                       /*swal({
+                           title: [],
+                           text: result.msg,
+                           type: "error"
+                       }); */
+                       /*  */
+                        $('#deleteModalError').modal({show:true, backdrop: 'static'});
+                        $('#deleteModalbodyError').html('<span>审核失败:</span>'+'<span style="font-weight:bold;color:blue; margin-right:10px; margin-left:10px">'+result.msg+'</span>'+ '<span></span>')
+                       /*  */
+                   } else {
+                   if (result.status == 0) {
+                       /* swal({
+                           title: [],
+                           text: 'SQL 检测正常',
+                           type: "success"
+                       }); */
+                        $('#deleteModalError').modal({show:true, backdrop: 'static'});
+                        $('#deleteModalbodyError').html('<span>审核成功:</span>'+'<span style="font-weight:bold;color:blue; margin-right:10px; margin-left:10px">'+result.msg+'</span>'+ '<span></span>')
+                   }
+                 }
+                  /*   */
+               },
+            })
+        });
+/* */
+
+/* */
+$('.ace').change(function(){
+    //  获取被选择的radio的值
+    var env = $('input[name="form-field-radio"]').filter(':checked').val()
+
+    $.ajax({
+        type: "post",
+        url: "{% url 'autoselect' %}",
+        data: {env:env},
+        dataType: "json",
+        success: function(result){
+            console.log(result)
+            //业务逻辑
+            dbs = result.dbs
+            mngs = result.mngs
+            $('#targetdb').empty()  // 清空select
+            $('#treater').empty()
+            for(i in dbs) {
+                var dbshtml = '<option>' + dbs[i] + '</option>'  // 生成数据
+                $('#targetdb').append(dbshtml)  // 给模态框渲染dbname数据
+            }
+            for(m in mngs) {
+                var mngshtml = '<option>' + mngs[m] + '</option>'  // 生成数据
+                $('#treater').append(mngshtml)  // 给模态框渲染dbname数据
+            }
+
+        },
+        error: function(){
+	     //显示错误信息
+        },
+    })
+})
+
+</script>
+{% endblock %}
